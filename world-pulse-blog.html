@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WORLD PULSE — Global Intelligence Daily</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink: #0a0a0b;
+    --paper: #f4f0e8;
+    --cream: #faf8f3;
+    --red: #c8102e;
+    --gold: #b8860b;
+    --slate: #2d3142;
+    --mist: #8a8fa8;
+    --rule: #d4cfc4;
+    --accent-blue: #1a3a5c;
+    --accent-green: #1a4a2e;
+    --accent-orange: #b84a00;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── BREAKING TICKER ── */
+  .ticker-bar {
+    background: var(--red);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    height: 36px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+  }
+  .ticker-label {
+    background: var(--ink);
+    color: #fff;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 0 16px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+  .ticker-track {
+    overflow: hidden;
+    flex: 1;
+  }
+  .ticker-inner {
+    display: flex;
+    gap: 0;
+    animation: ticker 40s linear infinite;
+    white-space: nowrap;
+  }
+  .ticker-inner span {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    padding: 0 40px;
+  }
+  .ticker-inner span::after {
+    content: '●';
+    margin-left: 40px;
+    opacity: 0.5;
+  }
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    background: var(--ink);
+    padding: 0 40px;
+    border-bottom: 3px solid var(--red);
+  }
+  .masthead-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .date-edition {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--mist);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .logo {
+    text-align: center;
+    flex: 1;
+  }
+  .logo-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    color: #fff;
+    letter-spacing: -1px;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .logo-title span { color: var(--red); }
+  .logo-tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--mist);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .masthead-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .btn-subscribe {
+    background: var(--red);
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-subscribe:hover { background: #a00c24; }
+  .btn-search {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  .btn-search:hover { border-color: rgba(255,255,255,0.6); }
+
+  /* ── NAV ── */
+  .nav {
+    display: flex;
+    gap: 0;
+    padding: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-item {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    padding: 14px 20px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .nav-item:hover { color: #fff; }
+  .nav-item.active { color: #fff; border-bottom-color: var(--red); }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 40px; }
+
+  /* ── HERO GRID ── */
+  .hero-section { padding: 40px 0 0; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    grid-template-rows: auto auto;
+    gap: 2px;
+    background: var(--rule);
+    border: 2px solid var(--rule);
+  }
+  .hero-lead {
+    background: var(--cream);
+    padding: 32px;
+    grid-row: span 2;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-lead::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--red);
+  }
+  .hero-image-placeholder {
+    width: 100%;
+    height: 340px;
+    background: linear-gradient(135deg, var(--slate) 0%, var(--accent-blue) 60%, #0d2035 100%);
+    display: flex;
+    align-items: flex-end;
+    padding: 24px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-image-placeholder::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero-location-badge {
+    background: var(--red);
+    color: #fff;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 4px 10px;
+    text-transform: uppercase;
+    position: absolute;
+    top: 20px;
+    left: 24px;
+    z-index: 1;
+  }
+  .hero-globe {
+    font-size: 80px;
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.15;
+    animation: spin 40s linear infinite;
+  }
+  @keyframes spin { from{transform:translateY(-50%) rotate(0deg)} to{transform:translateY(-50%) rotate(360deg)} }
+  .hero-image-caption {
+    color: rgba(255,255,255,0.7);
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+  }
+  .category-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--red);
+    border-top: 2px solid var(--red);
+    padding-top: 6px;
+    margin-bottom: 12px;
+  }
+  .hero-headline {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    line-height: 1.15;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .hero-deck {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    font-weight: 300;
+  }
+  .byline {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--mist);
+    text-transform: uppercase;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+  }
+  .byline strong { color: var(--ink); }
+
+  /* Side stack */
+  .hero-side { background: var(--cream); padding: 24px 28px; }
+  .hero-side + .hero-side { border-top: 2px solid var(--rule); }
+  .hero-side .headline {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    line-height: 1.3;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .hero-side .deck {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+  .side-image {
+    width: 100%;
+    height: 140px;
+    margin-bottom: 16px;
+    object-fit: cover;
+    display: block;
+  }
+  .side-image-bg {
+    width: 100%;
+    height: 130px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── SECTION DIVIDER ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 48px 0 24px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--ink);
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+  }
+  .section-rule { flex: 1; height: 2px; background: var(--rule); }
+  .section-rule.red { background: var(--red); }
+
+  /* ── CARD GRID ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--rule);
+    border: 2px solid var(--rule);
+    margin-bottom: 2px;
+  }
+  .card {
+    background: var(--cream);
+    padding: 24px;
+    transition: background 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+  .card:hover { background: #fff; }
+  .card-image {
+    width: 100%;
+    height: 160px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-image.war { background: linear-gradient(135deg, #1a0a0a, #3d0f0f); }
+  .card-image.finance { background: linear-gradient(135deg, #0a1a0a, #0f3d1a); }
+  .card-image.science { background: linear-gradient(135deg, #0a0a1a, #0f0f3d); }
+  .card-image.geo { background: linear-gradient(135deg, #1a1a0a, #3d350f); }
+  .card-image.health { background: linear-gradient(135deg, #0a1a1a, #0f333d); }
+  .card-image.climate { background: linear-gradient(135deg, #051a0a, #0b3a1a); }
+  .card .category-tag { margin-bottom: 10px; }
+  .card .headline {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1.3;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .card .deck {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+  .card .byline { font-size: 10px; margin-top: 14px; }
+
+  /* ── FEATURE ROW (full width single) ── */
+  .feature-wide {
+    background: var(--ink);
+    padding: 40px;
+    margin: 2px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .feature-wide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.02' fill-rule='evenodd'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .feature-wide .category-tag { color: #e8a0a0; border-top-color: var(--red); }
+  .feature-wide .headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .feature-wide .deck { color: rgba(255,255,255,0.65); font-size: 15px; line-height: 1.7; font-weight: 300; }
+  .feature-wide .byline { color: rgba(255,255,255,0.4); border-top-color: rgba(255,255,255,0.15); }
+  .feature-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 120px;
+    opacity: 0.2;
+    filter: grayscale(1);
+  }
+
+  /* ── OPINION / ANALYSIS STRIP ── */
+  .opinion-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: var(--rule);
+    border: 2px solid var(--rule);
+    margin-bottom: 2px;
+  }
+  .opinion-card {
+    background: #fff;
+    padding: 24px;
+    border-top: 4px solid;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .opinion-card:hover { background: var(--cream); }
+  .opinion-card:nth-child(1) { border-top-color: var(--red); }
+  .opinion-card:nth-child(2) { border-top-color: var(--accent-blue); }
+  .opinion-card:nth-child(3) { border-top-color: var(--accent-green); }
+  .opinion-card:nth-child(4) { border-top-color: var(--gold); }
+  .opinion-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 10px;
+  }
+  .opinion-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--slate);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+  }
+  .opinion-author {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--mist);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .opinion-card .headline {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+
+  /* ── LIVE UPDATES ── */
+  .live-section {
+    background: var(--ink);
+    padding: 40px;
+    margin: 40px 0;
+    position: relative;
+  }
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--red);
+    color: #fff;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 6px 14px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    animation: pulse-live 1.5s ease infinite;
+  }
+  @keyframes pulse-live {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+  .live-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 28px;
+  }
+  .updates-feed { display: flex; flex-direction: column; gap: 0; }
+  .update-item {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 20px;
+    padding: 18px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    align-items: start;
+    animation: slideIn 0.5s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .update-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--red);
+    letter-spacing: 1px;
+    padding-top: 2px;
+  }
+  .update-text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+  }
+  .update-text strong { color: #fff; }
+  .update-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 2px 8px;
+    margin-right: 8px;
+    text-transform: uppercase;
+    border: 1px solid;
+  }
+  .tag-war { border-color: #ff6b6b; color: #ff6b6b; }
+  .tag-econ { border-color: #69db7c; color: #69db7c; }
+  .tag-sci { border-color: #74c0fc; color: #74c0fc; }
+  .tag-diplo { border-color: #fcc419; color: #fcc419; }
+
+  /* ── DATA PANEL ── */
+  .data-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2px;
+    background: var(--rule);
+    border: 2px solid var(--rule);
+    margin: 40px 0;
+  }
+  .data-card {
+    background: var(--cream);
+    padding: 20px 16px;
+    text-align: center;
+  }
+  .data-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 8px;
+  }
+  .data-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .data-change {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+  }
+  .up { color: #2d9e5f; }
+  .down { color: var(--red); }
+
+  /* ── BOTTOM GRID ── */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2px;
+    background: var(--rule);
+    border: 2px solid var(--rule);
+    margin-bottom: 40px;
+  }
+  .list-section { background: var(--cream); padding: 28px; }
+  .list-item {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: start;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .list-item:last-child { border-bottom: none; }
+  .list-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--rule);
+    line-height: 1;
+    margin-top: -4px;
+  }
+  .list-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 4px;
+  }
+  .list-meta { font-size: 12px; color: var(--mist); }
+
+  /* Sidebar */
+  .sidebar { background: var(--cream); }
+  .sidebar-widget { padding: 24px; border-bottom: 2px solid var(--rule); }
+  .sidebar-widget:last-child { border-bottom: none; }
+  .widget-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--mist);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--rule);
+  }
+  .map-widget {
+    background: var(--slate);
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 60px;
+    opacity: 0.8;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .map-pulse {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: var(--red);
+    border-radius: 50%;
+    animation: map-pulse 2s ease infinite;
+  }
+  .map-pulse::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border: 2px solid var(--red);
+    border-radius: 50%;
+    animation: map-ring 2s ease infinite;
+  }
+  .map-pulse:nth-child(1) { top: 30%; left: 55%; }
+  .map-pulse:nth-child(2) { top: 45%; left: 30%; animation-delay: 0.5s; }
+  .map-pulse:nth-child(3) { top: 60%; left: 70%; animation-delay: 1s; }
+  @keyframes map-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  @keyframes map-ring { 0%{transform:scale(1);opacity:1} 100%{transform:scale(2);opacity:0} }
+  .hotspot-list { display: flex; flex-direction: column; gap: 10px; }
+  .hotspot-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+  }
+  .hotspot-name { font-weight: 500; color: var(--ink); }
+  .hotspot-status {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    padding: 2px 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .status-critical { background: #fee; color: var(--red); }
+  .status-watch { background: #ffeedd; color: var(--accent-orange); }
+  .status-monitor { background: #eef4ff; color: var(--accent-blue); }
+
+  .newsletter-widget input {
+    width: 100%;
+    border: 2px solid var(--rule);
+    padding: 10px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    background: #fff;
+    margin-bottom: 10px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .newsletter-widget input:focus { border-color: var(--ink); }
+  .newsletter-widget button {
+    width: 100%;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    padding: 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .newsletter-widget button:hover { background: var(--red); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink);
+    color: rgba(255,255,255,0.5);
+    padding: 40px;
+    margin-top: 60px;
+  }
+  .footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .footer-brand .logo-title { font-size: 1.8rem; }
+  .footer-brand p { margin-top: 12px; font-size: 13px; line-height: 1.7; }
+  .footer-col h4 {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 14px;
+  }
+  .footer-col a {
+    display: block;
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    text-decoration: none;
+    margin-bottom: 8px;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+  .footer-col a:hover { color: #fff; }
+  .footer-bottom {
+    max-width: 1280px;
+    margin: 24px auto 0;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+
+  /* ── AI SEARCH BAR ── */
+  .ai-search-bar {
+    background: #fff;
+    border: 2px solid var(--rule);
+    border-bottom: 4px solid var(--ink);
+    padding: 20px 28px;
+    margin: 32px 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .ai-icon {
+    background: var(--ink);
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .ai-search-bar input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    background: transparent;
+    color: var(--ink);
+  }
+  .ai-search-bar input::placeholder { color: var(--mist); }
+  .ai-btn {
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .ai-btn:hover { background: var(--red); }
+  .ai-result {
+    background: #f8f8ff;
+    border-left: 4px solid var(--accent-blue);
+    padding: 16px 20px;
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--slate);
+    display: none;
+  }
+  .ai-result.visible { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .container { padding: 0 20px; }
+    .masthead { padding: 0 20px; }
+    .hero-grid { grid-template-columns: 1fr; }
+    .card-grid { grid-template-columns: 1fr 1fr; }
+    .opinion-strip { grid-template-columns: 1fr 1fr; }
+    .bottom-grid { grid-template-columns: 1fr; }
+    .data-strip { grid-template-columns: repeat(3, 1fr); }
+    .footer-inner { grid-template-columns: 1fr 1fr; }
+    .feature-wide { grid-template-columns: 1fr; }
+    .feature-visual { display: none; }
+    .live-section { padding: 24px 20px; }
+  }
+  @media (max-width: 600px) {
+    .card-grid { grid-template-columns: 1fr; }
+    .opinion-strip { grid-template-columns: 1fr; }
+    .data-strip { grid-template-columns: 1fr 1fr; }
+    .masthead-actions .btn-search { display: none; }
+    .logo-title { font-size: 2rem; }
+    .footer-inner { grid-template-columns: 1fr; }
+  }
+
+  /* Read more button */
+  .read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-top: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .read-more:hover { border-bottom-color: var(--red); }
+  .read-more::after { content: '→'; }
+</style>
+</head>
+<body>
+
+<!-- BREAKING TICKER -->
+<div class="ticker-bar">
+  <div class="ticker-label">⚡ Breaking</div>
+  <div class="ticker-track">
+    <div class="ticker-inner" id="tickerContent">
+      <span>G7 Finance Ministers reach emergency consensus on global tariff framework</span>
+      <span>WHO declares new health advisory across three Southeast Asian nations</span>
+      <span>CERN scientists announce breakthrough in quantum entanglement research</span>
+      <span>UN Security Council convenes emergency session over Red Sea corridor tensions</span>
+      <span>Federal Reserve signals rate pause amid mixed inflation signals</span>
+      <span>NASA confirms water ice deposits discovered in Mars southern polar region</span>
+      <span>European Parliament passes landmark AI governance legislation</span>
+      <span>G7 Finance Ministers reach emergency consensus on global tariff framework</span>
+      <span>WHO declares new health advisory across three Southeast Asian nations</span>
+      <span>CERN scientists announce breakthrough in quantum entanglement research</span>
+      <span>UN Security Council convenes emergency session over Red Sea corridor tensions</span>
+      <span>Federal Reserve signals rate pause amid mixed inflation signals</span>
+      <span>NASA confirms water ice deposits discovered in Mars southern polar region</span>
+      <span>European Parliament passes landmark AI governance legislation</span>
+    </div>
+  </div>
+</div>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-top">
+    <div class="date-edition" id="dateEdition">Loading...</div>
+    <div class="logo">
+      <div class="logo-title">WORLD<span>PULSE</span></div>
+      <div class="logo-tagline">Global Intelligence · Daily</div>
+    </div>
+    <div class="masthead-actions">
+      <button class="btn-search" onclick="toggleSearch()">⌕</button>
+      <button class="btn-subscribe">Subscribe</button>
+    </div>
+  </div>
+  <nav class="nav" id="mainNav">
+    <div class="nav-item active" onclick="setNav(this)">All</div>
+    <div class="nav-item" onclick="setNav(this)">Conflict &amp; Crisis</div>
+    <div class="nav-item" onclick="setNav(this)">Geopolitics</div>
+    <div class="nav-item" onclick="setNav(this)">Economy</div>
+    <div class="nav-item" onclick="setNav(this)">Science</div>
+    <div class="nav-item" onclick="setNav(this)">Climate</div>
+    <div class="nav-item" onclick="setNav(this)">Health</div>
+    <div class="nav-item" onclick="setNav(this)">Technology</div>
+    <div class="nav-item" onclick="setNav(this)">Leaders</div>
+    <div class="nav-item" onclick="setNav(this)">Analysis</div>
+  </nav>
+</header>
+
+<!-- MAIN -->
+<main>
+  <div class="container">
+
+    <!-- AI SEARCH -->
+    <div class="ai-search-bar" id="aiSearchBar" style="display:none">
+      <div class="ai-icon">✦</div>
+      <input type="text" id="aiInput" placeholder="Ask anything — What's happening in the Middle East today?" onkeydown="if(event.key==='Enter')askAI()"/>
+      <button class="ai-btn" onclick="askAI()">Ask AI</button>
+    </div>
+    <div class="ai-result" id="aiResult"></div>
+
+    <!-- GLOBAL MARKETS STRIP -->
+    <div class="data-strip">
+      <div class="data-card">
+        <div class="data-label">S&amp;P 500</div>
+        <div class="data-value">5,241</div>
+        <div class="data-change up">▲ +0.84%</div>
+      </div>
+      <div class="data-card">
+        <div class="data-label">Crude Oil</div>
+        <div class="data-value">$78.3</div>
+        <div class="data-change down">▼ −1.2%</div>
+      </div>
+      <div class="data-card">
+        <div class="data-label">Gold / oz</div>
+        <div class="data-value">$2,388</div>
+        <div class="data-change up">▲ +0.31%</div>
+      </div>
+      <div class="data-card">
+        <div class="data-label">EUR / USD</div>
+        <div class="data-value">1.072</div>
+        <div class="data-change down">▼ −0.09%</div>
+      </div>
+      <div class="data-card">
+        <div class="data-label">10Y Treasury</div>
+        <div class="data-value">4.63%</div>
+        <div class="data-change up">▲ +5bps</div>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero-section">
+      <div class="hero-grid">
+        <!-- LEAD STORY -->
+        <div class="hero-lead">
+          <div class="hero-image-placeholder">
+            <div class="hero-location-badge">📍 Middle East</div>
+            <div class="hero-globe">🌍</div>
+            <div class="hero-image-caption">Diplomatic talks enter third consecutive day — Geneva, Switzerland</div>
+          </div>
+          <div class="category-tag">Geopolitics · Top Story</div>
+          <h1 class="hero-headline">World Powers Resume Fractured Talks As Ceasefire Window Narrows</h1>
+          <p class="hero-deck">Senior envoys from five nations convened in an extraordinary closed-door session Thursday, as the diplomatic window to broker a sustainable ceasefire agreement grew increasingly narrow. Sources close to the negotiations describe an atmosphere of cautious urgency, with mediators pressing all parties toward a framework agreement before the weekend deadline.</p>
+          <a class="read-more">Continue Reading</a>
+          <div class="byline"><strong>By Marcus Osei</strong> · Senior Diplomatic Correspondent · 2 hours ago</div>
+        </div>
+
+        <!-- SIDE STORIES -->
+        <div class="hero-side">
+          <div class="side-image-bg" style="background:linear-gradient(135deg,#0f1e0f,#1a3a1a)">
+            <span style="font-size:50px;opacity:0.4">📈</span>
+          </div>
+          <div class="category-tag" style="color:#2d9e5f;border-top-color:#2d9e5f">Economy · Exclusive</div>
+          <div class="headline">IMF Revises Global Growth Forecast Upward Despite Trade Headwinds</div>
+          <div class="deck">The International Monetary Fund raised its 2026 global growth projection to 3.2%, citing resilient emerging markets, though warned that escalating tariff disputes could erode gains by year's end.</div>
+          <a class="read-more" style="color:#2d9e5f">Read More</a>
+        </div>
+        <div class="hero-side">
+          <div class="side-image-bg" style="background:linear-gradient(135deg,#0a0f1f,#0f1e3a)">
+            <span style="font-size:50px;opacity:0.4">🔬</span>
+          </div>
+          <div class="category-tag" style="color:#4a9eff;border-top-color:#4a9eff">Science · Breakthrough</div>
+          <div class="headline">Gene-Editing Trial Shows 94% Efficacy Against Rare Childhood Cancer</div>
+          <div class="deck">A landmark Phase III clinical trial published in Nature Medicine reports near-complete remission in pediatric patients with a previously untreatable form of acute lymphoblastic leukemia using a novel CRISPR-based therapy.</div>
+          <a class="read-more" style="color:#4a9eff">Read More</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- TODAY'S COVERAGE -->
+    <div class="section-header">
+      <h2 class="section-title">Today's Coverage</h2>
+      <div class="section-rule red"></div>
+      <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--mist);letter-spacing:1px;white-space:nowrap" id="liveTime"></span>
+    </div>
+
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-image war">🔥</div>
+        <div class="category-tag">Conflict</div>
+        <div class="headline">Drone Strikes Intensify Along Northern Front As Both Sides Claim Tactical Gains</div>
+        <div class="deck">Military analysts say the overnight exchange of long-range drone strikes marked the most sustained aerial campaign in three months, raising fears of a wider escalation before talks conclude.</div>
+        <div class="byline"><strong>Sarah Al-Rashid</strong> · 4 hrs ago</div>
+      </div>
+      <div class="card">
+        <div class="card-image finance">📊</div>
+        <div class="category-tag">Economy</div>
+        <div class="headline">China's Exports Surge 11% as Trade Route Diversification Pays Off</div>
+        <div class="deck">Beijing's sustained push to open alternative shipping corridors through Central Asia and Southeast Africa has yielded a dramatic jump in monthly export figures, defying Western tariff pressures.</div>
+        <div class="byline"><strong>Lin Wei Zhang</strong> · 5 hrs ago</div>
+      </div>
+      <div class="card">
+        <div class="card-image science">🛸</div>
+        <div class="category-tag">Science &amp; Space</div>
+        <div class="headline">NASA's Artemis IV Crew Completes Historic Lunar South Pole Landing</div>
+        <div class="deck">Four astronauts touched down within 200 meters of the lunar south pole's permanently shadowed crater rim, beginning a seven-day surface mission to drill for water ice samples that may transform future deep-space missions.</div>
+        <div class="byline"><strong>Dr. Priya Menon</strong> · 6 hrs ago</div>
+      </div>
+      <div class="card">
+        <div class="card-image geo">🌐</div>
+        <div class="category-tag">Leaders</div>
+        <div class="headline">PM Modi Addresses G20 Summit: "A New Architecture for Global Finance"</div>
+        <div class="deck">India's Prime Minister called for a complete overhaul of Bretton Woods institutions, proposing a new multilateral framework that gives emerging economies greater voting power and reserve currency access.</div>
+        <div class="byline"><strong>Arjun Bhatt</strong> · 7 hrs ago</div>
+      </div>
+      <div class="card">
+        <div class="card-image health">🧬</div>
+        <div class="category-tag">Health</div>
+        <div class="headline">WHO Warns of Antibiotic-Resistant Superbug Spreading Across Hospitals in 14 Nations</div>
+        <div class="deck">A new strain of carbapenem-resistant Klebsiella pneumoniae has been identified in ICUs across Europe and South Asia, prompting emergency guidance and calls for a global surveillance upgrade.</div>
+        <div class="byline"><strong>Dr. Fatima Osei</strong> · 9 hrs ago</div>
+      </div>
+      <div class="card">
+        <div class="card-image climate">🌱</div>
+        <div class="category-tag">Climate</div>
+        <div class="headline">Record Antarctic Ice Loss Confirmed — Scientists Sound "Code Red" Warning</div>
+        <div class="deck">New satellite data processed by the European Space Agency reveals the Antarctic ice sheet lost a record 423 billion tonnes of ice last year, nearly double the previous peak and ahead of even worst-case climate projections.</div>
+        <div class="byline"><strong>Emma Larsson</strong> · 10 hrs ago</div>
+      </div>
+    </div>
+
+    <!-- FEATURE DARK STRIP -->
+    <div class="feature-wide">
+      <div>
+        <div class="category-tag">Deep Investigation · 4,200 Words</div>
+        <h2 class="headline">The Shadow War: How Undersea Cable Sabotage Became the New Battlefield for Great-Power Competition</h2>
+        <p class="deck">Six incidents in eighteen months. Three oceans. No credible claims. An investigation into the systematic targeting of the world's digital infrastructure — and the intelligence agencies, navies, and tech giants in a quiet race to protect it.</p>
+        <a class="read-more" style="color:#e8a0a0">Read Investigation</a>
+        <div class="byline" style="margin-top:16px"><strong>By the WorldPulse Investigations Team</strong> · Published Today</div>
+      </div>
+      <div class="feature-visual">🌊</div>
+    </div>
+
+    <!-- ANALYSIS / OPINION -->
+    <div class="section-header">
+      <h2 class="section-title">Analysis &amp; Opinion</h2>
+      <div class="section-rule"></div>
+    </div>
+    <div class="opinion-strip">
+      <div class="opinion-card">
+        <div class="opinion-label">Opinion</div>
+        <div class="opinion-avatar">R</div>
+        <div class="opinion-author">Robert Kagan · Foreign Policy</div>
+        <div class="headline">"The Liberal International Order Isn't Dead — But It's on Life Support"</div>
+      </div>
+      <div class="opinion-card">
+        <div class="opinion-label">Analysis</div>
+        <div class="opinion-avatar">A</div>
+        <div class="opinion-author">Amina Diallo · Economics</div>
+        <div class="headline">"Why the Dollar's Dominance May Outlast Every Prediction of Its Demise"</div>
+      </div>
+      <div class="opinion-card">
+        <div class="opinion-label">Science Desk</div>
+        <div class="opinion-avatar">J</div>
+        <div class="opinion-author">James Park · Technology</div>
+        <div class="headline">"AI Is Already Reshaping Intelligence Agencies — We Just Can't See It Yet"</div>
+      </div>
+      <div class="opinion-card">
+        <div class="opinion-label">Climate Desk</div>
+        <div class="opinion-avatar">S</div>
+        <div class="opinion-author">Sofia Reyes · Climate</div>
+        <div class="headline">"Carbon Markets Have Failed. Here's What Comes Next"</div>
+      </div>
+    </div>
+
+    <!-- LIVE UPDATES -->
+    <div class="live-section">
+      <div class="live-badge"><div class="live-dot"></div>Live Updates</div>
+      <div class="live-title">Global Situation Room — April 18, 2026</div>
+      <div class="updates-feed" id="updatesFeed">
+        <div class="update-item">
+          <div class="update-time" id="t1"></div>
+          <div class="update-text"><span class="update-tag tag-diplo">Diplomacy</span><strong>Geneva Talks:</strong> Lead mediator confirms parties have agreed to a 72-hour humanitarian pause beginning at midnight GMT, pending final sign-off from all delegations.</div>
+        </div>
+        <div class="update-item">
+          <div class="update-time" id="t2"></div>
+          <div class="update-text"><span class="update-tag tag-econ">Markets</span><strong>Fed Watch:</strong> Chicago Fed President signals the central bank may be "done for the cycle" after core PCE prints at 2.4% — markets price in 68% probability of a June cut.</div>
+        </div>
+        <div class="update-item">
+          <div class="update-time" id="t3"></div>
+          <div class="update-text"><span class="update-tag tag-sci">Science</span><strong>Artemis IV:</strong> Mission Control confirms the crew's drill has penetrated 1.8 meters into lunar regolith and detected moisture — mission scientists describe "extremely promising" spectral readings.</div>
+        </div>
+        <div class="update-item">
+          <div class="update-time" id="t4"></div>
+          <div class="update-text"><span class="update-tag tag-war">Conflict</span><strong>Red Sea:</strong> US Navy destroyer intercepts a ballistic missile launched toward commercial shipping lane in the Gulf of Aden; no casualties reported; diplomatic note filed with UN Security Council.</div>
+        </div>
+        <div class="update-item">
+          <div class="update-time" id="t5"></div>
+          <div class="update-text"><span class="update-tag tag-econ">Economy</span><strong>EU Trade:</strong> European Commission announces new set of reciprocal tariff exemptions with India, covering €14B in annual pharmaceutical and machinery trade — stocks in both markets rally.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM GRID: Most Read + Sidebar -->
+    <div class="bottom-grid">
+      <div class="list-section">
+        <div class="section-header" style="margin:0 0 20px">
+          <h2 class="section-title" style="font-size:1.2rem">Most Read Today</h2>
+          <div class="section-rule"></div>
+        </div>
+        <div class="list-item">
+          <div class="list-number">01</div>
+          <div>
+            <div class="list-title">The Real Cost of the Trade War: How Tariffs Are Reshaping Global Supply Chains</div>
+            <div class="list-meta">Economy · 14,200 reads</div>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="list-number">02</div>
+          <div>
+            <div class="list-title">Artemis IV's Moonshot: What Water Ice on the Lunar Poles Means for Humanity's Future</div>
+            <div class="list-meta">Science · 11,800 reads</div>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="list-number">03</div>
+          <div>
+            <div class="list-title">Inside the Room Where Ceasefires Are Made — and Broken</div>
+            <div class="list-meta">Geopolitics · 9,400 reads</div>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="list-number">04</div>
+          <div>
+            <div class="list-title">Antibiotic Resistance: The Silent Pandemic Nobody Is Talking About</div>
+            <div class="list-meta">Health · 8,100 reads</div>
+          </div>
+        </div>
+        <div class="list-item">
+          <div class="list-number">05</div>
+          <div>
+            <div class="list-title">China's New Silk Road Is Working — Even If No One Wants to Admit It</div>
+            <div class="list-meta">Economy · 7,200 reads</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+        <div class="sidebar-widget">
+          <div class="widget-title">🔴 Crisis Hotspots</div>
+          <div class="map-widget">
+            🗺️
+            <div class="map-pulse"></div>
+            <div class="map-pulse"></div>
+            <div class="map-pulse"></div>
+          </div>
+          <div class="hotspot-list">
+            <div class="hotspot-item">
+              <span class="hotspot-name">Red Sea Corridor</span>
+              <span class="hotspot-status status-critical">Critical</span>
+            </div>
+            <div class="hotspot-item">
+              <span class="hotspot-name">Eastern Europe</span>
+              <span class="hotspot-status status-critical">Critical</span>
+            </div>
+            <div class="hotspot-item">
+              <span class="hotspot-name">Taiwan Strait</span>
+              <span class="hotspot-status status-watch">Watch</span>
+            </div>
+            <div class="hotspot-item">
+              <span class="hotspot-name">Sahel Region</span>
+              <span class="hotspot-status status-watch">Watch</span>
+            </div>
+            <div class="hotspot-item">
+              <span class="hotspot-name">Korean Peninsula</span>
+              <span class="hotspot-status status-monitor">Monitor</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-widget newsletter-widget">
+          <div class="widget-title">✉ Daily Briefing</div>
+          <p style="font-size:13px;color:#555;margin-bottom:14px;line-height:1.6">Get the world's most important stories delivered every morning at 6 AM.</p>
+          <input type="email" placeholder="Your email address"/>
+          <button>Subscribe Free</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo-title" style="font-size:1.8rem">WORLD<span style="color:var(--red)">PULSE</span></div>
+      <p>Independent global journalism covering conflict, economy, science, climate, and the decisions that shape our world. Published daily since 2024.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Sections</h4>
+      <a>Geopolitics</a>
+      <a>Economy</a>
+      <a>Science</a>
+      <a>Climate</a>
+      <a>Health</a>
+      <a>Technology</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a>About Us</a>
+      <a>Our Journalists</a>
+      <a>Investigations</a>
+      <a>Press Freedom</a>
+      <a>Corrections</a>
+      <a>Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Subscribe</h4>
+      <a>Daily Briefing</a>
+      <a>Weekly Digest</a>
+      <a>Crisis Alerts</a>
+      <a>Science Brief</a>
+      <a>RSS Feeds</a>
+      <a>Podcast</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 WorldPulse Global Media. All rights reserved.</span>
+    <span>Privacy · Terms · Cookie Policy</span>
+  </div>
+</footer>
+
+<script>
+// Date & time
+function updateTime() {
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('dateEdition').textContent =
+    `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  const t = now.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',timeZoneName:'short'});
+  const el = document.getElementById('liveTime');
+  if(el) el.textContent = `Updated ${t}`;
+}
+updateTime();
+setInterval(updateTime, 60000);
+
+// Set live timestamps
+function setUpdateTimes() {
+  const now = new Date();
+  const offsets = [8, 25, 47, 90, 130];
+  offsets.forEach((min, i) => {
+    const t = new Date(now - min * 60000);
+    const h = t.getHours().toString().padStart(2,'0');
+    const m = t.getMinutes().toString().padStart(2,'0');
+    const el = document.getElementById('t'+(i+1));
+    if(el) el.textContent = `${h}:${m} GMT`;
+  });
+}
+setUpdateTimes();
+
+// Nav active state
+function setNav(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// AI Search toggle
+function toggleSearch() {
+  const bar = document.getElementById('aiSearchBar');
+  bar.style.display = bar.style.display === 'none' ? 'flex' : 'none';
+  if(bar.style.display === 'flex') document.getElementById('aiInput').focus();
+}
+
+// AI Q&A using Anthropic API
+async function askAI() {
+  const input = document.getElementById('aiInput');
+  const result = document.getElementById('aiResult');
+  const query = input.value.trim();
+  if (!query) return;
+
+  result.className = 'ai-result visible';
+  result.innerHTML = '<span style="color:var(--mist);font-family:\'Space Mono\',monospace;font-size:12px">✦ Analyzing global intelligence...</span>';
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `You are the AI intelligence assistant for WorldPulse, a world-class global news publication. You have deep knowledge of geopolitics, economics, science, health, climate, and international affairs. Answer questions in a sharp, authoritative, journalistic style — factual, analytical, and concise. Format your answer in 2–3 tight paragraphs. Do not use bullet points. Sound like a senior foreign correspondent with a Pulitzer Prize. Today's date is April 18, 2026.`,
+        messages: [{ role: 'user', content: query }]
+      })
+    });
+    const data = await response.json();
+    const text = data.content?.map(b => b.text || '').join('') || 'Unable to retrieve analysis.';
+    result.innerHTML = `<div style="margin-bottom:8px;font-family:'Space Mono',monospace;font-size:10px;color:var(--mist);letter-spacing:1px;text-transform:uppercase">✦ AI Intelligence Brief</div>${text.replace(/\n\n/g,'</p><p style="margin-top:12px">').replace(/^/,'<p>').replace(/$/,'</p>')}`;
+  } catch(e) {
+    result.innerHTML = '<span style="color:var(--red)">Intelligence brief unavailable — please try again.</span>';
+  }
+}
+
+// Auto-add new live update every 90 seconds (demo)
+const newUpdates = [
+  {tag:'tag-war', label:'Conflict', time:'', text:'<strong>Ceasefire Status:</strong> UN envoy confirms both parties have formally acknowledged the 72-hour humanitarian pause framework — implementation monitoring teams being deployed.'},
+  {tag:'tag-sci', label:'Science', time:'', text:'<strong>Climate:</strong> The World Meteorological Organization confirms April 2026 is now the hottest April ever recorded globally, surpassing the previous record set in 2024 by 0.18°C.'},
+];
+let newUpdateIdx = 0;
+setInterval(() => {
+  if(newUpdateIdx >= newUpdates.length) return;
+  const feed = document.getElementById('updatesFeed');
+  const u = newUpdates[newUpdateIdx++];
+  const now = new Date();
+  const timeStr = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} GMT`;
+  const div = document.createElement('div');
+  div.className = 'update-item';
+  div.innerHTML = `<div class="update-time">${timeStr}</div><div class="update-text"><span class="update-tag ${u.tag}">${u.label}</span>${u.text}</div>`;
+  feed.insertBefore(div, feed.firstChild);
+}, 90000);
+</script>
+</body>
+</html>

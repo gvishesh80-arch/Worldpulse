@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>WorldPulse — Global Intelligence Daily</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --ink:#0f0e0d;--paper:#f6f2ea;--cream:#faf7f2;
+  --red:#c41e3a;--gold:#b8860b;--teal:#1a5f7a;
+  --rule:#ddd6c8;--mist:#8a8680;--surf:#fff;
+  --blue:#1a3a5c;--green:#1a4a2e;--orange:#b84a00;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;font-size:17px;line-height:1.7;}
+
+/* ── TICKER ── */
+.ticker{background:var(--red);color:#fff;height:34px;display:flex;overflow:hidden;position:sticky;top:0;z-index:200;}
+.ticker-tag{background:#000;color:#fff;padding:0 14px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;display:flex;align-items:center;flex-shrink:0;text-transform:uppercase;}
+.ticker-track{overflow:hidden;flex:1;display:flex;align-items:center;}
+.ticker-inner{display:flex;white-space:nowrap;animation:tick 45s linear infinite;}
+.ticker-inner span{font-size:11px;font-weight:500;padding:0 36px;}
+.ticker-inner span::after{content:'◆';margin-left:36px;opacity:.4;}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ── MASTHEAD ── */
+.masthead{background:var(--ink);padding:0 32px;border-bottom:3px solid var(--red);}
+.mast-top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 14px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.mast-date{font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,.45);letter-spacing:1px;text-transform:uppercase;}
+.mast-logo{text-align:center;flex:1;}
+.logo-name{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(2rem,5vw,3.8rem);color:#fff;letter-spacing:-1px;line-height:1;text-transform:uppercase;cursor:pointer;}
+.logo-name span{color:var(--red);}
+.logo-tag{font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,.35);letter-spacing:4px;text-transform:uppercase;margin-top:3px;}
+.mast-actions{display:flex;gap:10px;align-items:center;}
+.btn-sub{background:var(--red);color:#fff;border:none;padding:7px 16px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s;}
+.btn-sub:hover{background:#a01830;}
+.btn-search{background:transparent;border:1px solid rgba(255,255,255,.2);color:#fff;padding:7px 12px;cursor:pointer;font-size:13px;transition:border-color .2s;}
+.btn-search:hover{border-color:rgba(255,255,255,.6);}
+
+/* ── NAV ── */
+.nav{display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-item{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);padding:12px 18px;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;user-select:none;}
+.nav-item:hover{color:#fff;}
+.nav-item.active{color:#fff;border-bottom-color:var(--red);}
+
+/* ── LAYOUT ── */
+.container{max-width:1220px;margin:0 auto;padding:0 32px;}
+
+/* ── SEARCH BAR ── */
+.search-wrap{display:none;background:var(--ink);padding:14px 32px;border-bottom:1px solid rgba(255,255,255,.1);}
+.search-wrap.open{display:flex;gap:10px;align-items:center;}
+.search-wrap input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;padding:9px 14px;font-family:'Source Serif 4',serif;font-size:14px;outline:none;border-radius:2px;}
+.search-wrap input::placeholder{color:rgba(255,255,255,.3);}
+.search-wrap button{background:var(--red);color:#fff;border:none;padding:9px 18px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;}
+
+/* ── MARKETS STRIP ── */
+.markets{display:flex;gap:0;background:var(--cream);border-bottom:2px solid var(--rule);overflow-x:auto;padding:0 32px;}
+.market-item{display:flex;align-items:center;gap:8px;padding:9px 20px 9px 0;border-right:1px solid var(--rule);white-space:nowrap;}
+.market-item:last-child{border-right:none;}
+.m-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--mist);text-transform:uppercase;}
+.m-val{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--ink);}
+.m-chg{font-family:'Space Mono',monospace;font-size:10px;}
+.up{color:#2a9e60;}.down{color:var(--red);}
+
+/* ── SECTION HEADER ── */
+.sec-hd{display:flex;align-items:center;gap:14px;margin:40px 0 22px;}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;text-transform:uppercase;letter-spacing:-.3px;color:var(--ink);}
+.sec-rule{flex:1;height:2px;background:var(--rule);}
+.sec-rule.red{background:var(--red);}
+.sec-more{font-family:'Space Mono',monospace;font-size:10px;color:var(--red);cursor:pointer;white-space:nowrap;text-decoration:none;}
+.sec-more:hover{text-decoration:underline;}
+
+/* ── HERO GRID ── */
+.hero-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:2px;background:var(--rule);border:2px solid var(--rule);margin-top:32px;}
+.hero-lead{background:var(--surf);padding:28px 32px;position:relative;}
+.hero-lead::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--red);}
+.hero-img{width:100%;height:300px;background:linear-gradient(160deg,#0f1e30,#1a3a58,#0d2035);display:flex;align-items:flex-end;padding:20px;margin-bottom:20px;position:relative;overflow:hidden;}
+.hero-img-icon{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:90px;opacity:.1;}
+.hero-img-cap{font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,.55);letter-spacing:.5px;position:relative;z-index:1;}
+.hero-badge{background:var(--red);color:#fff;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;padding:3px 9px;text-transform:uppercase;position:absolute;top:18px;left:20px;}
+.kicker{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--red);border-top:2px solid var(--red);padding-top:5px;display:inline-block;margin-bottom:10px;}
+.kicker.teal{color:var(--teal);border-top-color:var(--teal);}
+.kicker.gold{color:var(--gold);border-top-color:var(--gold);}
+.kicker.green{color:#2a7a3a;border-top-color:#2a7a3a;}
+h1.hero-hl{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(1.7rem,2.8vw,2.4rem);line-height:1.15;color:var(--ink);margin-bottom:14px;cursor:pointer;}
+h1.hero-hl:hover{color:var(--red);}
+.deck{font-size:15px;color:#444;line-height:1.7;font-weight:300;margin-bottom:16px;}
+.byline{font-family:'Space Mono',monospace;font-size:9px;color:var(--mist);letter-spacing:.8px;text-transform:uppercase;padding-top:14px;border-top:1px solid var(--rule);}
+.byline strong{color:var(--ink);}
+.read-more{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--red);cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-top:10px;text-decoration:none;border-bottom:1px solid transparent;transition:border-color .2s;}
+.read-more:hover{border-bottom-color:var(--red);}
+.read-more.teal{color:var(--teal);}
+.read-more.teal:hover{border-bottom-color:var(--teal);}
+
+/* Hero side stories */
+.hero-side{background:var(--surf);padding:22px 26px;}
+.hero-side+.hero-side{border-top:2px solid var(--rule);}
+.side-img{width:100%;height:120px;margin-bottom:14px;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;overflow:hidden;}
+.hl2{font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;line-height:1.3;color:var(--ink);cursor:pointer;margin-bottom:7px;}
+.hl2:hover{color:var(--red);}
+.deck2{font-size:13px;color:#555;line-height:1.6;font-weight:300;}
+
+/* ── CARD GRID ── */
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--rule);border:2px solid var(--rule);}
+.card{background:var(--surf);padding:22px;cursor:pointer;transition:background .15s;}
+.card:hover{background:#fffef9;}
+.card-img{width:100%;height:148px;display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:14px;position:relative;overflow:hidden;}
+.hl3{font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;line-height:1.3;color:var(--ink);margin-bottom:7px;}
+.hl3:hover{color:var(--red);}
+.deck3{font-size:12px;color:#555;line-height:1.6;font-weight:300;}
+
+/* ── DARK FEATURE ── */
+.dark-feature{background:var(--ink);padding:40px 44px;display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:center;cursor:pointer;transition:opacity .2s;position:relative;overflow:hidden;margin:2px 0;}
+.dark-feature::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(196,30,58,.08),transparent 60%);}
+.dark-feature:hover{opacity:.95;}
+.df-kicker{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(232,160,160,.8);border-top:2px solid var(--red);padding-top:5px;display:inline-block;margin-bottom:12px;}
+.df-hl{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(1.4rem,2.3vw,2rem);line-height:1.2;color:#fff;margin-bottom:14px;}
+.df-deck{font-size:14px;color:rgba(255,255,255,.6);line-height:1.7;font-weight:300;}
+.df-read{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;color:rgba(232,160,160,.8);display:inline-flex;align-items:center;gap:5px;margin-top:14px;text-decoration:none;}
+.df-visual{font-size:110px;opacity:.14;text-align:center;}
+
+/* ── OPINION STRIP ── */
+.opinion-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--rule);border:2px solid var(--rule);}
+.op-card{background:#fff;padding:22px;border-top:4px solid;cursor:pointer;transition:background .15s;}
+.op-card:hover{background:var(--cream);}
+.op-card:nth-child(1){border-top-color:var(--red);}
+.op-card:nth-child(2){border-top-color:var(--blue);}
+.op-card:nth-child(3){border-top-color:var(--green);}
+.op-card:nth-child(4){border-top-color:var(--gold);}
+.op-label{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mist);margin-bottom:9px;}
+.op-avatar{width:38px;height:38px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Playfair Display',serif;font-weight:700;font-size:15px;margin-bottom:10px;}
+.op-author{font-family:'Space Mono',monospace;font-size:9px;color:var(--mist);letter-spacing:.5px;text-transform:uppercase;margin-bottom:7px;}
+.op-hl{font-family:'Playfair Display',serif;font-style:italic;font-size:.92rem;line-height:1.4;color:var(--ink);}
+
+/* ── LIVE SECTION ── */
+.live-section{background:var(--ink);padding:36px 40px;margin:40px 0;}
+.live-badge{display:inline-flex;align-items:center;gap:7px;background:var(--red);color:#fff;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;padding:5px 12px;text-transform:uppercase;margin-bottom:20px;}
+.live-dot{width:7px;height:7px;background:#fff;border-radius:50%;animation:blink 1.4s ease infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.live-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:#fff;margin-bottom:24px;}
+.update-item{display:grid;grid-template-columns:90px 1fr;gap:18px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.07);}
+.u-time{font-family:'Space Mono',monospace;font-size:11px;color:var(--red);letter-spacing:.5px;}
+.u-text{font-size:13px;color:rgba(255,255,255,.78);line-height:1.6;}
+.u-text strong{color:#fff;}
+.utag{display:inline-block;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1px;padding:2px 7px;margin-right:7px;text-transform:uppercase;border:1px solid;}
+.utag.war{border-color:#ff7070;color:#ff7070;}
+.utag.econ{border-color:#60c878;color:#60c878;}
+.utag.sci{border-color:#60aaf0;color:#60aaf0;}
+.utag.diplo{border-color:#f0c040;color:#f0c040;}
+.utag.ai{border-color:#a090f0;color:#a090f0;}
+
+/* ── BOTTOM GRID ── */
+.bottom-grid{display:grid;grid-template-columns:2fr 340px;gap:2px;background:var(--rule);border:2px solid var(--rule);margin-bottom:40px;}
+.most-read{background:var(--surf);padding:26px;}
+.mr-item{display:grid;grid-template-columns:32px 1fr;gap:14px;padding:14px 0;border-bottom:1px solid var(--rule);align-items:start;cursor:pointer;}
+.mr-item:last-child{border-bottom:none;}
+.mr-item:hover .mr-title{color:var(--red);}
+.mr-num{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--rule);line-height:1;margin-top:-3px;}
+.mr-title{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:var(--ink);line-height:1.3;margin-bottom:3px;}
+.mr-meta{font-size:11px;color:var(--mist);}
+
+/* Sidebar */
+.sidebar{background:var(--surf);}
+.sb-widget{padding:22px;border-bottom:2px solid var(--rule);}
+.sb-widget:last-child{border-bottom:none;}
+.sb-title{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mist);margin-bottom:14px;padding-bottom:7px;border-bottom:2px solid var(--rule);}
+.sb-link{display:block;padding:13px 0;border-bottom:1px solid var(--rule);cursor:pointer;text-decoration:none;}
+.sb-link:last-child{border-bottom:none;}
+.sb-link:hover .sb-hl{color:var(--red);}
+.sb-tag{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--red);margin-bottom:3px;}
+.sb-hl{font-family:'Playfair Display',serif;font-size:.9rem;font-weight:700;color:var(--ink);line-height:1.3;}
+.sb-meta{font-family:'Space Mono',monospace;font-size:8px;color:var(--mist);margin-top:3px;}
+
+/* Newsletter */
+.nl-widget{background:var(--cream);padding:20px;}
+.nl-widget p{font-size:12px;color:#555;margin-bottom:12px;line-height:1.5;}
+.nl-widget input{width:100%;border:1px solid var(--rule);padding:8px 11px;font-family:'Source Serif 4',serif;font-size:13px;background:#fff;margin-bottom:8px;outline:none;transition:border-color .2s;}
+.nl-widget input:focus{border-color:var(--ink);}
+.nl-widget button{width:100%;background:var(--ink);color:#fff;border:none;padding:9px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .2s;}
+.nl-widget button:hover{background:var(--red);}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);color:rgba(255,255,255,.4);padding:36px 32px;margin-top:60px;}
+.footer-inner{max-width:1220px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,.08);}
+.footer-brand .logo-name{font-size:1.6rem;}
+.footer-brand p{margin-top:10px;font-size:12px;line-height:1.7;}
+.footer-col h4{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:12px;}
+.footer-col a{display:block;font-size:12px;color:rgba(255,255,255,.35);text-decoration:none;margin-bottom:7px;transition:color .2s;cursor:pointer;}
+.footer-col a:hover{color:#fff;}
+.footer-bottom{max-width:1220px;margin:22px auto 0;display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.5px;}
+
+/* ══════════════════════════════════════
+   ARTICLE PAGE
+══════════════════════════════════════ */
+.article-page{max-width:780px;margin:0 auto;padding:48px 32px 80px;}
+.art-breadcrumb{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--mist);margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.art-breadcrumb a{color:var(--red);cursor:pointer;text-decoration:none;}
+.art-breadcrumb a:hover{text-decoration:underline;}
+.art-kicker{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--red);border-top:2px solid var(--red);padding-top:5px;display:inline-block;margin-bottom:14px;}
+.art-hl{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(1.9rem,4vw,2.9rem);line-height:1.13;color:var(--ink);margin-bottom:18px;letter-spacing:-.3px;}
+.art-deck{font-size:1.12rem;font-weight:300;color:#444;line-height:1.65;margin-bottom:22px;border-left:4px solid var(--red);padding-left:18px;font-style:italic;}
+.art-byline{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-bottom:34px;}
+.art-avatar{width:38px;height:38px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;color:#fff;font-family:'Playfair Display',serif;font-weight:700;font-size:15px;flex-shrink:0;}
+.art-byline-name{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--ink);letter-spacing:.5px;text-transform:uppercase;}
+.art-byline-meta{font-family:'Space Mono',monospace;font-size:9px;color:var(--mist);}
+.art-hero{width:100%;height:340px;margin-bottom:8px;position:relative;overflow:hidden;border-radius:2px;}
+.art-hero-cap{font-family:'Space Mono',monospace;font-size:9px;color:var(--mist);margin-bottom:30px;font-style:italic;}
+.art-body p{margin-bottom:22px;font-size:1.02rem;line-height:1.85;color:#1a1a1a;}
+.art-body h3{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--ink);margin:38px 0 14px;padding-top:30px;border-top:2px solid var(--rule);}
+.art-body blockquote{margin:34px 0;padding:22px 26px;background:var(--cream);border-left:5px solid var(--gold);font-style:italic;font-size:1.1rem;color:#333;line-height:1.7;}
+.art-body blockquote cite{display:block;margin-top:10px;font-family:'Space Mono',monospace;font-size:9px;font-style:normal;color:var(--mist);letter-spacing:1px;text-transform:uppercase;}
+.pull-quote{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;font-style:italic;color:var(--red);text-align:center;padding:30px 0;border-top:3px solid var(--red);border-bottom:3px solid var(--red);margin:38px 0;line-height:1.3;}
+.fact-box{background:var(--blue);color:#fff;padding:26px;margin:34px 0;}
+.fact-box-title{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+.fact-box ul{list-style:none;}
+.fact-box ul li{font-size:13px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;color:rgba(255,255,255,.82);}
+.fact-box ul li:last-child{border-bottom:none;}
+.fact-box ul li strong{color:#fff;font-family:'Space Mono',monospace;font-size:12px;}
+.art-tags{margin-top:44px;padding-top:22px;border-top:2px solid var(--rule);display:flex;flex-wrap:wrap;gap:7px;}
+.tag{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--rule);padding:4px 11px;color:var(--mist);cursor:pointer;transition:all .2s;}
+.tag:hover{border-color:var(--ink);color:var(--ink);}
+.art-nav{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--rule);border:2px solid var(--rule);margin-top:44px;}
+.art-nav-item{background:var(--surf);padding:20px;cursor:pointer;transition:background .15s;}
+.art-nav-item:hover{background:var(--cream);}
+.art-nav-item.next{text-align:right;}
+.art-nav-dir{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mist);margin-bottom:6px;}
+.art-nav-title{font-family:'Playfair Display',serif;font-weight:700;font-size:.95rem;color:var(--ink);line-height:1.3;}
+.art-nav-item:hover .art-nav-title{color:var(--red);}
+.back-btn{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--red);cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin-top:28px;padding-top:28px;border-top:1px solid var(--rule);text-decoration:none;}
+.back-btn:hover{text-decoration:underline;}
+
+/* ── CATEGORY PAGE ── */
+.cat-page{max-width:1100px;margin:0 auto;padding:40px 32px 80px;}
+.cat-header{text-align:center;padding:28px 0 32px;border-bottom:3px double var(--rule);margin-bottom:36px;}
+.cat-name{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;color:var(--ink);}
+.cat-desc{font-size:14px;color:var(--mist);margin-top:8px;}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--rule);border:2px solid var(--rule);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .container,.article-page,.cat-page{padding:0 16px;}
+  .masthead{padding:0 16px;}
+  .hero-grid{grid-template-columns:1fr;}
+  .card-grid{grid-template-columns:1fr 1fr;}
+  .opinion-strip{grid-template-columns:1fr 1fr;}
+  .bottom-grid{grid-template-columns:1fr;}
+  .footer-inner{grid-template-columns:1fr 1fr;}
+  .dark-feature{grid-template-columns:1fr;}
+  .df-visual{display:none;}
+  .live-section{padding:24px 16px;}
+  .sidebar{display:none;}
+  .cat-grid{grid-template-columns:1fr 1fr;}
+  .search-wrap{padding:12px 16px;}
+  .markets{padding:0 16px;}
+}
+@media(max-width:580px){
+  .card-grid{grid-template-columns:1fr;}
+  .opinion-strip{grid-template-columns:1fr;}
+  .cat-grid{grid-template-columns:1fr;}
+  .footer-inner{grid-template-columns:1fr;}
+  .mast-actions .btn-search{display:none;}
+  .art-nav{grid-template-columns:1fr;}
+}
+
+/* Transitions */
+#app-root>*{animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div id="app-root"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATA — Real news April 21, 2026
+// ═══════════════════════════════════════════════
+var ARTICLES = [
+  {
+    id:'iran-talks',
+    cat:'Geopolitics',
+    catSlug:'geopolitics',
+    tag:'Breaking · Crisis',
+    badge:'🔴 LIVE',
+    color:'red',
+    headline:'Vance Flies to Pakistan as Iran Ceasefire Teeters on the Brink',
+    deck:'Vice President JD Vance departed for Islamabad Tuesday alongside envoys Witkoff and Kushner for a second round of high-stakes negotiations with Iran — even as Tehran publicly denied it would participate and Trump threatened to restart strikes.',
+    author:'Marcus Osei',
+    role:'Senior Diplomatic Correspondent',
+    time:'Today, 9:14 AM',
+    readTime:'7 min read',
+    avatar:'M',
+    avatarBg:'#1a3a5c',
+    heroGrad:'linear-gradient(160deg,#0f1520,#1a2a40,#0d1828)',
+    heroIcon:'✈️',
+    heroCaption:'Air Force Two departs Andrews Air Force Base for Islamabad, Pakistan — April 21, 2026 · Pool/Reuters',
+    reads:'18,400',
+    body: `<p>The fragile ceasefire binding the United States, Israel, and Iran to a pause in hostilities entered its most perilous hours yet on Tuesday, as Vice President JD Vance boarded a plane for Islamabad even while Iranian officials publicly insisted no second round of peace talks would take place.</p>
+<p>The delegation — which also includes special envoy Steve Witkoff and Jared Kushner, the same team that led the first round of Islamabad talks on April 11-12 — departed amid a frenzy of contradictory signals from both capitals that left diplomats and analysts scrambling to determine whether negotiations had collapsed or were simply proceeding through deliberate opacity.</p>
+<blockquote>"We're offering a very fair and reasonable DEAL, and I hope they take it because, if they don't, the United States is going to have no choice but to act."<cite>— President Donald Trump, Truth Social, April 20, 2026</cite></blockquote>
+<h3>The Ceasefire That Nearly Wasn't</h3>
+<p>The two-week ceasefire agreed in the original Islamabad talks was technically set to expire Tuesday, though Trump announced Monday that he was extending the deadline to Wednesday evening — effectively giving negotiators an additional 24 hours to reach a breakthrough. The White House spent all of Monday waiting for a signal from Tehran that it would send a delegation to Islamabad, with sources describing an atmosphere of intense uncertainty.</p>
+<p>Iranian sources familiar with the negotiations told multiple Western outlets that a delegation representing Tehran would travel to Pakistan, even as the Iranian government's official position remained a flat refusal. Iran's judiciary chief Gholamhossein Mohseni Ejei added to the tension Tuesday, saying Tehran must "maintain 100% readiness" in case the US launches new attacks, and declaring that the US seizure of an Iranian-flagged cargo ship in the Gulf of Oman on Sunday was "undoubtedly a clear violation" of the ceasefire.</p>
+<div class="fact-box"><div class="fact-box-title">📋 Key Facts — US-Iran War Ceasefire</div><ul>
+<li><span>Ceasefire agreed</span><strong>April 11-12, Islamabad</strong></li>
+<li><span>First talks led by</span><strong>Vance, Witkoff, Kushner (US) · Ghalibaf, Araghchi (Iran)</strong></li>
+<li><span>Pakistan mediating team</span><strong>PM Sharif, Field Marshal Munir, FM Dar</strong></li>
+<li><span>Original deadline</span><strong>Tuesday, April 21 (extended to Wednesday)</strong></li>
+<li><span>US naval blockade of</span><strong>Strait of Hormuz — Iran's core demand to lift</strong></li>
+<li><span>Trump's threat</span><strong>Strikes on Iranian bridges and power plants if no deal</strong></li>
+</ul></div>
+<h3>Pakistan's Diplomatic Tightrope</h3>
+<p>Pakistan's value as a mediator lies in a rare quality: credible access to both sides. Pakistani Army Chief Field Marshal Asim Munir travelled to Tehran last Wednesday carrying what officials described as "a new message from Washington." Iranian Ambassador Reza Amiri Moghadam had stated last week that Tehran would "do talks in Pakistan and nowhere else, because we trust Pakistan."</p>
+<p>Pakistani authorities have begun referring to the engagement as the "Islamabad Process" — a deliberate framing designed to present the talks not as a single high-stakes meeting but as an ongoing diplomatic track with its own institutional momentum. Analysts say this framing matters: it lowers the cost of individual meetings collapsing while preserving the broader channel.</p>
+<div class="pull-quote">"As long as the naval blockade remains, faultlines remain."</div>
+<p>Iran's ambassador to Pakistan, writing on social media minutes before Trump's Truth Social post, catalogued Tehran's objections: violations of international law, the continuation of the US naval blockade of the Strait of Hormuz, threats of further strikes, and what he called "unreasonable demands" were all incompatible with a genuine pursuit of peace. The blockade, which has disrupted roughly 20% of global oil flows, has emerged as the single most contentious issue — Iran will not negotiate, officials say, until it is lifted. Washington says it will not lift it until a deal is in place.</p>
+<h3>What a Deal Would Need to Include</h3>
+<p>Sources familiar with both sides' positions say the outline of a potential agreement involves three core elements: a US commitment to lift the naval blockade upon signing; Iranian agreement to verifiable constraints on uranium enrichment that stop short of full dismantlement of its programme; and a framework for gradual sanctions relief tied to compliance benchmarks. Israel's role in any agreement remains the deepest complication — Tehran insists that any deal must include binding commitments from Washington to restrain Israeli military operations in Lebanon and Gaza, something the Trump administration has so far refused to guarantee in writing.</p>
+<p>What happens Wednesday evening if no deal is in place is the question haunting every capital involved. Trump has threatened strikes on Iranian bridges and power plants — targets chosen, advisers say, for their economic impact rather than their military significance. Whether that threat remains credible, or whether it is being deployed primarily as leverage, is something only the next 36 hours will reveal.</p>`
+  },
+  {
+    id:'gaza-71bn',
+    cat:'Middle East',
+    catSlug:'middle-east',
+    tag:'Humanitarian',
+    color:'gold',
+    headline:'UN and EU: Gaza Needs $71.4 Billion to Rebuild — Human Development Set Back 77 Years',
+    deck:'A landmark joint assessment by the United Nations, European Union, and World Bank has quantified the catastrophic cost of over two years of war in Gaza — a figure so large it would challenge the reconstruction budgets of entire nations.',
+    author:'Fatima Al-Rashid',
+    role:'Middle East Correspondent',
+    time:'Today, 7:30 AM',
+    readTime:'6 min read',
+    avatar:'F',
+    avatarBg:'#1a4a2e',
+    heroGrad:'linear-gradient(160deg,#1a1000,#3a2800,#1a1408)',
+    heroIcon:'🏚️',
+    heroCaption:'Aerial view of destroyed buildings in northern Gaza Strip, April 2026 · AFP',
+    reads:'14,200',
+    body:`<p>The scale of destruction wrought on the Gaza Strip over more than two years of war is so vast that restoring the territory to its pre-war baseline would require $71.4 billion — a sum larger than the annual GDP of many middle-income countries — according to a landmark joint assessment published Monday by the United Nations, European Union, and World Bank.</p>
+<p>The final Gaza Rapid Damage and Needs Assessment (RDNA), released April 20, found that the conflict that began following the Hamas attacks on October 7, 2023 has caused damage and losses of catastrophic proportions, pushing back human development in the Gaza Strip by an estimated 77 years and displacing nearly 1.9 million people.</p>
+<blockquote>"The scale and extent of deprivation across living conditions, livelihoods, food security, gender equality, and social inclusion have pushed back human development in the Gaza Strip by 77 years."<cite>— Gaza RDNA Final Assessment, April 20, 2026</cite></blockquote>
+<div class="fact-box"><div class="fact-box-title">📊 Gaza RDNA — Key Numbers</div><ul>
+<li><span>Total reconstruction need</span><strong>$71.4 billion (10 years)</strong></li>
+<li><span>First 18 months required</span><strong>$26.3 billion</strong></li>
+<li><span>Physical infrastructure damage</span><strong>$35.2 billion</strong></li>
+<li><span>Economic & social losses</span><strong>$22.7 billion</strong></li>
+<li><span>Housing units destroyed/damaged</span><strong>371,888+</strong></li>
+<li><span>Hospitals non-functional</span><strong>More than 50%</strong></li>
+<li><span>Palestinian fatalities (WHO/UN)</span><strong>More than 71,000</strong></li>
+<li><span>Human development setback</span><strong>77 years</strong></li>
+</ul></div>
+<h3>Sector-by-Sector Devastation</h3>
+<p>The assessment found that virtually every sector of Gazan society has been devastated. More than 371,888 housing units have been destroyed or damaged — representing the majority of the territory's housing stock. More than half of all hospitals are non-functional, nearly all schools have been destroyed or damaged, and the economy has contracted so severely that GDP has effectively ceased to exist in any meaningful form.</p>
+<p>The sectors requiring the largest reconstruction investments include housing ($18.3 billion), followed by infrastructure, health, education, and agriculture. The assessment estimated that agricultural land loss and the destruction of fishing infrastructure alone will take years to remediate, compounding food insecurity that already affects the entire population.</p>
+<h3>Palestinian-Led Recovery</h3>
+<p>The UN and EU stressed that recovery must be "Palestinian-led" and must incorporate approaches that actively support the transfer of governance to the Palestinian Authority, in accordance with UN Security Council resolution 2803 — adopted last November — which welcomed the creation of US President Donald Trump's Board of Peace to support Gaza's reconstruction. Whether that mechanism, which remains disputed by multiple parties, can actually channel reconstruction funds at the scale required is a question the report carefully avoids answering.</p>
+<p>The $26.3 billion required in the first 18 months presents an immediate financing challenge. International donors have historically struggled to mobilise pledged funds for conflict-affected territories even at a fraction of this scale. The question of who will actually pay — and under what political conditions — remains entirely unresolved.</p>`
+  },
+  {
+    id:'claude-opus-47',
+    cat:'Claude AI',
+    catSlug:'claude-ai',
+    tag:'✦ AI Column · Weekly',
+    color:'teal',
+    headline:'Claude Opus 4.7 Arrives — And There\'s a More Powerful Model Anthropic Won\'t Release',
+    deck:'Anthropic\'s newest flagship model beats GPT-5.4 and Gemini 3.1 Pro on key benchmarks. But the company openly admits a more capable system called Mythos exists and is being withheld from the public — raising profound questions about what AI safety actually requires.',
+    author:'James Park',
+    role:'AI & Technology Correspondent',
+    time:'Today, 6:00 AM',
+    readTime:'9 min read',
+    avatar:'J',
+    avatarBg:'#3a1a5c',
+    heroGrad:'linear-gradient(160deg,#0d0d1a,#1a1030,#0f0a20)',
+    heroIcon:'🧠',
+    heroCaption:'Claude Opus 4.7 — Anthropic\'s most capable publicly available model · Illustration: WorldPulse AI Desk',
+    reads:'22,100',
+    body:`<p>Anthropic released Claude Opus 4.7 on April 17, and it is, by the company's own account and by independent benchmark testing, the most capable AI model available to the public. It outperforms OpenAI's GPT-5.4, released in early March, and Google's Gemini 3.1 Pro from February across a series of demanding tests: agentic coding, scaled tool use, agentic computer use, financial analysis, and multi-step research workflows.</p>
+<p>But the more significant story — the one that will define how historians eventually narrate this period in AI development — is the sentence buried in Anthropic's announcement: Opus 4.7 is not the company's most powerful model. That distinction belongs to Claude Mythos, a system Anthropic has restricted to a small number of enterprise partners for cybersecurity testing, and which the company has explicitly stated it does not plan to release to the public.</p>
+<blockquote>"Opus 4.7 is a notable improvement on Opus 4.6 in advanced software engineering, with particular gains on the most difficult tasks."<cite>— Anthropic, Model Release Statement, April 17, 2026</cite></blockquote>
+<h3>What Opus 4.7 Actually Does</h3>
+<p>The capabilities are real and substantial. Claude Opus 4.7 scores 64.3% on SWE-bench Pro — a benchmark that tests AI models on real-world software engineering tasks drawn from open-source repositories — and 87.6% on SWE-bench Verified. It scores 69.4% on Terminal-Bench 2.0. To contextualise those numbers: a year ago, no model could reliably complete more than a third of SWE-bench tasks. The gap between what AI can now do autonomously in software engineering and what it could do eighteen months ago is enormous.</p>
+<p>The model also introduces new capabilities that matter for practical deployment. A new /ultrareview command in Claude Code goes beyond standard code review — instead of checking syntax and basic errors, it simulates a senior human reviewer, flagging subtle design flaws, architectural problems, and logic gaps that would typically require experienced engineering judgment. "Auto mode," which allows Claude to make autonomous decisions without constant permission prompts, has been extended to Max plan users. A new effort control system — including an "xhigh" level sitting between high and max — gives developers fine-grained control over how much compute the model allocates to individual tasks.</p>
+<div class="fact-box"><div class="fact-box-title">📊 Claude Opus 4.7 — Key Benchmarks</div><ul>
+<li><span>SWE-bench Pro</span><strong>64.3%</strong></li>
+<li><span>SWE-bench Verified</span><strong>87.6%</strong></li>
+<li><span>Terminal-Bench 2.0</span><strong>69.4%</strong></li>
+<li><span>Context window</span><strong>1 million tokens</strong></li>
+<li><span>Anthropic valuation (April 2026)</span><strong>$380B (reported $800B VC offers)</strong></li>
+<li><span>Annual run-rate revenue</span><strong>$30 billion</strong></li>
+<li><span>Available on</span><strong>Claude.ai, Bedrock, Vertex AI, Azure Foundry</strong></li>
+</ul></div>
+<h3>The Model They Won't Release</h3>
+<p>Claude Mythos is more capable than Opus 4.7 across every measured dimension. Anthropic has said Mythos is restricted to a select group of technology and cybersecurity companies under a programme called Project Glasswing. The company has said its goal is to "learn how it could eventually deploy Mythos-class models at scale" — implying that the restriction is temporary, a cautious step before broader release, rather than a permanent decision.</p>
+<p>What Anthropic is conceding by keeping Mythos restricted is that it believes this model poses risks it cannot yet adequately mitigate at scale. The cybersecurity dimension is the most explicit concern — Mythos is being used to identify vulnerabilities in enterprise software, a task for which its capabilities make it extraordinarily effective. But those same capabilities, if accessible to malicious actors, could be used to find and exploit those same vulnerabilities for harm.</p>
+<div class="pull-quote">"Anthropic does not plan to make Claude Mythos Preview generally available — the company's goal is to learn how it could eventually deploy Mythos-class models at scale."</div>
+<h3>The $800 Billion Question</h3>
+<p>Anthropic's annual run-rate revenue has reached $30 billion in April 2026, driven primarily by enterprise adoption and the extraordinary commercial success of Claude Code — the company's autonomous software development tool. Venture capital firms are reportedly extending investment offers at valuations approaching $800 billion, more than double the $380 billion Series G valuation Anthropic carried in February.</p>
+<p>That financial trajectory creates its own pressure. A company valued at $800 billion has obligations to investors that a mission-driven safety lab does not. Whether Anthropic can maintain the discipline to withhold Mythos from the market — or its successor, or the model after that — while its commercial momentum accelerates is the deepest question in AI development today. The company has always argued that safety-focused labs must remain at the frontier, because ceding the frontier to less cautious actors would be more dangerous than advancing carefully. Mythos tests that argument in the most direct way imaginable.</p>
+<h3>Claude Design and the Broader Product Expansion</h3>
+<p>Alongside Opus 4.7, Anthropic launched Claude Design — an experimental product from Anthropic Labs that allows users to generate designs, prototypes, slide decks, and one-pagers through natural language. The product, which competes directly with Figma and Adobe in the design workflow space, is built on Opus 4.7 and targets founders, product managers, and marketers without a dedicated design team.</p>
+<p>Anthropic also confirmed this week that Claude products will remain permanently ad-free, publishing a formal statement explaining that advertising incentives are structurally incompatible with an AI assistant designed to give honest, unbiased answers. In a media environment where nearly every digital product eventually discovers advertising, the commitment is notable. Whether it holds as the company's scale increases is another question entirely.</p>`
+  },
+  {
+    id:'us-israel-lebanon',
+    cat:'Middle East',
+    catSlug:'middle-east',
+    tag:'Diplomacy',
+    color:'teal',
+    headline:'US Hosts Direct Israel-Lebanon Talks in Washington as Regional Pressure Mounts',
+    deck:'The State Department hosted the second round of direct peace talks between Israel and Lebanon in Washington Tuesday — a parallel diplomatic track operating alongside the Iran negotiations and revealing the extraordinary complexity of the current regional crisis.',
+    author:'Sarah Al-Rashid',
+    role:'Washington Diplomatic Correspondent',
+    time:'Today, 10:45 AM',
+    readTime:'5 min read',
+    avatar:'S',
+    avatarBg:'#1a5f7a',
+    heroGrad:'linear-gradient(160deg,#080f1a,#0f1e30,#081422)',
+    heroIcon:'🕊️',
+    heroCaption:'State Department, Washington D.C. — April 21, 2026',
+    reads:'9,800',
+    body:`<p>While Vice President JD Vance was boarding a plane to Islamabad for the second round of US-Iran talks, the State Department was simultaneously hosting Israeli and Lebanese ambassadors in Washington for a separate but deeply related diplomatic process — direct negotiations between Tel Aviv and Beirut over the terms of a sustainable ceasefire in Lebanon.</p>
+<p>Israeli Ambassador to the US Yechiel Leiter and Lebanese Ambassador Nada Hamadeh Moawad were both present at Tuesday's session. The State Department did not confirm whether Secretary of State Marco Rubio would join them — a detail that itself carries diplomatic significance, as Rubio's presence or absence signals the administration's assessment of how close the two sides are to an agreement.</p>
+<h3>Two Tracks, One Crisis</h3>
+<p>The parallel tracks — Washington for the Lebanon-Israel process, Islamabad for US-Iran — reflect both the ambition and the complexity of the Trump administration's Middle East strategy. The theory of the case is that a comprehensive regional settlement is achievable: Iran agrees to verifiable nuclear constraints and a normalisation of relations with the US; Israel agrees to a durable ceasefire with Hezbollah in Lebanon; Gaza's reconstruction begins under Palestinian Authority governance; and the Strait of Hormuz reopens. Each element depends on all the others, which means every negotiating session involves a logic that extends far beyond the immediate bilateral relationship at the table.</p>
+<blockquote>"We must avoid at all costs another escalation like the one in Gaza."<cite>— Italian Foreign Minister Antonio Tajani, Beirut, April 2026</cite></blockquote>
+<p>The Lebanon-Israel negotiations are complicated by Israel's continued military operations in southern Lebanon. Israel bombed over 100 targets in Lebanon in a single ten-minute window last week — shortly after the first ceasefire with Iran was called — an operation that killed hundreds of people and drew condemnation from multiple European governments, including Italy, which suspended its defence cooperation agreement with Israel in response.</p>`
+  },
+  {
+    id:'ukraine-russia',
+    cat:'Europe',
+    catSlug:'europe',
+    tag:'Conflict',
+    color:'red',
+    headline:'Russian Drone and Missile Strikes Kill at Least 16 Across Ukraine Overnight',
+    deck:'Russia launched one of the most sustained overnight bombardment campaigns in weeks, targeting energy infrastructure and residential areas across multiple Ukrainian oblasts.',
+    author:'Anna Kovalenko',
+    role:'Eastern Europe Correspondent',
+    time:'Today, 5:30 AM',
+    readTime:'4 min read',
+    avatar:'A',
+    avatarBg:'#1a3a1a',
+    heroGrad:'linear-gradient(160deg,#100808,#2a1010,#100808)',
+    heroIcon:'💥',
+    heroCaption:'Rescue workers at the site of a Russian missile strike in Kharkiv Oblast — April 21, 2026 · Reuters',
+    reads:'11,300',
+    body:`<p>Russian drone and missile strikes killed at least 16 people and wounded dozens more across Ukraine in an overnight attack that targeted energy infrastructure, residential buildings, and transport links in several oblasts simultaneously.</p>
+<p>Ukrainian air defence forces reported intercepting a significant portion of the incoming projectiles, but confirmed that multiple strikes reached their targets. Emergency services were deployed across Kharkiv, Zaporizhzhia, and Odesa oblasts, where rescue teams worked through the night to pull survivors from collapsed structures.</p>
+<h3>Energy Infrastructure Targeted</h3>
+<p>Ukrainian officials confirmed that the attacks were directed in part at the country's already severely damaged power generation infrastructure. Two substations were struck, causing widespread outages in affected areas. Ukraine's energy ministry said repairs could take days in some locations, a significant concern as the country enters spring with its electrical grid operating at reduced capacity following years of sustained Russian targeting.</p>
+<p>Russia's Ministry of Defence stated that "the goals of the strike have been achieved, all the assigned targets have been hit" — a standard formulation that provides no independent verification of claims or civilian casualty assessments. The Ukrainian government disputed Russia's characterisation of the targets as exclusively military.</p>`
+  },
+  {
+    id:'japan-energy',
+    cat:'Asia',
+    catSlug:'asia',
+    tag:'Economy',
+    color:'green',
+    headline:'Japan Pledges $10 Billion to Ease Southeast Asia\'s Energy Crisis',
+    deck:'Tokyo announced a landmark clean energy financing package targeting Indonesia, Vietnam, and the Philippines — the largest single Japanese energy commitment to the region in a decade.',
+    author:'Kenji Tanaka',
+    role:'Asia Pacific Correspondent',
+    time:'Today, 4:00 AM',
+    readTime:'4 min read',
+    avatar:'K',
+    avatarBg:'#1a4a2e',
+    heroGrad:'linear-gradient(160deg,#081408,#0f2010,#081408)',
+    heroIcon:'⚡',
+    heroCaption:'Solar installation in Sumatra, Indonesia · File photograph',
+    reads:'7,600',
+    body:`<p>Japan announced a $10 billion energy financing package for Southeast Asia on Tuesday, targeting three countries grappling with rapidly growing power demand and the dual challenge of expanding electricity access while meeting emissions reduction commitments: Indonesia, Vietnam, and the Philippines.</p>
+<p>The announcement, made by Prime Minister Fumio Kishida at a bilateral summit in Tokyo, represents the largest single Japanese energy financing commitment to the region in a decade. The package includes both concessional loans and direct investment in renewable energy infrastructure, with a particular emphasis on solar, offshore wind, and grid modernisation.</p>
+<h3>Strategic Context</h3>
+<p>The pledge comes as Southeast Asian nations face an acute energy dilemma: surging electricity demand driven by economic growth and industrialisation, combined with international pressure to phase out coal — which still provides the majority of power generation in all three target countries. Japan's financing offers a pathway that Tokyo has framed as avoiding both energy poverty and emissions lock-in.</p>
+<p>Analysts noted the strategic dimension of the commitment, which deepens Japan's economic ties with three of ASEAN's most important economies at a moment when regional alignment on trade, security, and technology is being actively contested by multiple great powers.</p>`
+  }
+];
+
+var CATEGORIES = ['All','Geopolitics','Middle East','Claude AI','Europe','Asia','Economy','Science','Opinion'];
+
+// ═══════════════════════════════════════════════
+// ROUTER & STATE
+// ═══════════════════════════════════════════════
+var state = {
+  page: 'home',       // 'home' | 'article' | 'category'
+  articleId: null,
+  category: 'All',
+  activeNav: 'All',
+  searchOpen: false
+};
+
+function navigate(page, param) {
+  state.page = page;
+  if (page === 'article') state.articleId = param;
+  if (page === 'category') { state.category = param; state.activeNav = param; }
+  if (page === 'home') { state.activeNav = 'All'; }
+  window.scrollTo(0, 0);
+  render();
+}
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+function getArticle(id) { return ARTICLES.find(function(a){ return a.id === id; }); }
+function getByCategory(cat) {
+  if (cat === 'All') return ARTICLES;
+  return ARTICLES.filter(function(a){ return a.cat === cat; });
+}
+
+// ═══════════════════════════════════════════════
+// COMPONENTS
+// ═══════════════════════════════════════════════
+function buildTicker() {
+  var items = [
+    'Vance departs for Islamabad as Iran ceasefire deadline looms — Wednesday evening deadline set',
+    'UN & EU: Gaza needs $71.4 billion over 10 years to rebuild — human development set back 77 years',
+    'Anthropic launches Claude Opus 4.7 — admits withheld Mythos model is more capable',
+    'Russia strikes kill at least 16 across Ukraine in overnight bombardment',
+    'Japan pledges $10bn to ease Southeast Asia energy crisis',
+    'State Department hosts second round of direct Israel-Lebanon talks in Washington',
+    'Trump threatens Iran with new strikes on bridges and power plants if no deal by Wednesday'
+  ];
+  var doubled = items.concat(items);
+  return '<div class="ticker">' +
+    '<div class="ticker-tag">⚡ Breaking</div>' +
+    '<div class="ticker-track"><div class="ticker-inner">' +
+    doubled.map(function(t){ return '<span>' + t + '</span>'; }).join('') +
+    '</div></div></div>';
+}
+
+function buildMasthead() {
+  var now = new Date();
+  var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var dateStr = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+  return '<header class="masthead">' +
+    '<div class="mast-top">' +
+      '<div class="mast-date">' + dateStr + '</div>' +
+      '<div class="mast-logo">' +
+        '<div class="logo-name" onclick="navigate(\'home\')" title="WorldPulse Home">WORLD<span>PULSE</span></div>' +
+        '<div class="logo-tag">Global Intelligence · Daily</div>' +
+      '</div>' +
+      '<div class="mast-actions">' +
+        '<button class="btn-search" onclick="toggleSearch()" title="Search">⌕</button>' +
+        '<button class="btn-sub">Subscribe</button>' +
+      '</div>' +
+    '</div>' +
+    '<nav class="nav">' +
+      CATEGORIES.map(function(cat){
+        var active = state.activeNav === cat ? ' active' : '';
+        return '<div class="nav-item' + active + '" onclick="navigate(\'category\',\'' + cat + '\')">' + cat + '</div>';
+      }).join('') +
+    '</nav>' +
+  '</header>';
+}
+
+function buildSearch() {
+  return '<div class="search-wrap' + (state.searchOpen ? ' open' : '') + '" id="searchBar">' +
+    '<input type="text" id="searchInput" placeholder="Search WorldPulse — Iran talks, Gaza, Claude AI…" onkeydown="handleSearch(event)"/>' +
+    '<button onclick="doSearch()">Search</button>' +
+    '<button onclick="toggleSearch()" style="background:transparent;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.15);">✕</button>' +
+  '</div>';
+}
+
+function buildMarkets() {
+  var items = [
+    {label:'S&P 500',val:'5,228',chg:'▼ −0.42%',dir:'down'},
+    {label:'Crude Oil',val:'$82.4',chg:'▲ +2.1%',dir:'up',note:'Iran tensions'},
+    {label:'Gold',val:'$2,411',chg:'▲ +0.8%',dir:'up'},
+    {label:'EUR/USD',val:'1.069',chg:'▼ −0.14%',dir:'down'},
+    {label:'10Y Treasury',val:'4.71%',chg:'▼ −3bps',dir:'down'}
+  ];
+  return '<div class="markets">' +
+    items.map(function(m){
+      return '<div class="market-item">' +
+        '<span class="m-label">' + m.label + '</span>' +
+        '<span class="m-val">' + m.val + '</span>' +
+        '<span class="m-chg ' + m.dir + '">' + m.chg + '</span>' +
+      '</div>';
+    }).join('') +
+  '</div>';
+}
+
+function buildHeroGrid() {
+  var lead = ARTICLES[0];
+  var side1 = ARTICLES[1];
+  var side2 = ARTICLES[2];
+  return '<div class="hero-grid">' +
+    // Lead story
+    '<div class="hero-lead">' +
+      '<div class="hero-img" style="background:' + lead.heroGrad + '" onclick="navigate(\'article\',\'' + lead.id + '\')" title="Read: ' + lead.headline + '">' +
+        '<div class="hero-badge">' + (lead.badge || '📍 Breaking') + '</div>' +
+        '<div class="hero-img-icon">' + lead.heroIcon + '</div>' +
+        '<div class="hero-img-cap">' + lead.heroCaption + '</div>' +
+      '</div>' +
+      '<div class="kicker">' + lead.tag + '</div>' +
+      '<h1 class="hero-hl" onclick="navigate(\'article\',\'' + lead.id + '\')">' + lead.headline + '</h1>' +
+      '<div class="deck">' + lead.deck + '</div>' +
+      '<a class="read-more" onclick="navigate(\'article\',\'' + lead.id + '\')" title="Read full article">Continue Reading →</a>' +
+      '<div class="byline"><strong>' + lead.author + '</strong> · ' + lead.role + ' · ' + lead.time + '</div>' +
+    '</div>' +
+    // Side stories
+    '<div>' +
+      '<div class="hero-side">' +
+        '<div class="side-img" style="background:' + side1.heroGrad + ';cursor:pointer" onclick="navigate(\'article\',\'' + side1.id + '\')" title="Read: ' + side1.headline + '">' +
+          '<span style="font-size:48px;opacity:.4">' + side1.heroIcon + '</span>' +
+        '</div>' +
+        '<div class="kicker gold">' + side1.tag + '</div>' +
+        '<div class="hl2" onclick="navigate(\'article\',\'' + side1.id + '\')" title="Read: ' + side1.headline + '">' + side1.headline + '</div>' +
+        '<div class="deck2">' + side1.deck.substring(0,180) + '…</div>' +
+        '<a class="read-more" style="color:var(--gold);border-bottom-color:transparent" onclick="navigate(\'article\',\'' + side1.id + '\')" title="Read full article">Read More →</a>' +
+      '</div>' +
+      '<div class="hero-side">' +
+        '<div class="side-img" style="background:' + side2.heroGrad + ';cursor:pointer" onclick="navigate(\'article\',\'' + side2.id + '\')" title="Read: ' + side2.headline + '">' +
+          '<span style="font-size:48px;opacity:.4">' + side2.heroIcon + '</span>' +
+        '</div>' +
+        '<div class="kicker teal">' + side2.tag + '</div>' +
+        '<div class="hl2" onclick="navigate(\'article\',\'' + side2.id + '\')" title="Read: ' + side2.headline + '">' + side2.headline + '</div>' +
+        '<div class="deck2">' + side2.deck.substring(0,180) + '…</div>' +
+        '<a class="read-more teal" onclick="navigate(\'article\',\'' + side2.id + '\')" title="Read full article">Read More →</a>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function buildCardGrid() {
+  var cardArticles = ARTICLES.slice(3);
+  var colorMap = {red:'linear-gradient(135deg,#180808,#2a1010)',gold:'linear-gradient(135deg,#181200,#2a2000)',teal:'linear-gradient(135deg,#041014,#081c28)',green:'linear-gradient(135deg,#041008,#081e10)'};
+  return '<div class="card-grid">' +
+    cardArticles.map(function(a){
+      return '<div class="card" onclick="navigate(\'article\',\'' + a.id + '\')" title="Read: ' + a.headline + '">' +
+        '<div class="card-img" style="background:' + (colorMap[a.color]||colorMap.teal) + '">' +
+          '<span style="font-size:44px;opacity:.4">' + a.heroIcon + '</span>' +
+        '</div>' +
+        '<div class="kicker ' + (a.color==='gold'?'gold':a.color==='green'?'green':a.color==='teal'?'teal':'') + '">' + a.tag + '</div>' +
+        '<div class="hl3">' + a.headline + '</div>' +
+        '<div class="deck3">' + a.deck.substring(0,130) + '…</div>' +
+        '<div class="byline" style="margin-top:10px"><strong>' + a.author + '</strong> · ' + a.time + '</div>' +
+      '</div>';
+    }).join('') +
+  '</div>';
+}
+
+function buildDarkFeature() {
+  var a = ARTICLES[1]; // Gaza story as dark feature
+  return '<div class="dark-feature" onclick="navigate(\'article\',\'' + a.id + '\')" title="Read: ' + a.headline + '">' +
+    '<div>' +
+      '<div class="df-kicker">🔍 Deep Investigation · UN Report</div>' +
+      '<div class="df-hl">' + a.headline + '</div>' +
+      '<div class="df-deck">' + a.deck + '</div>' +
+      '<a class="df-read" onclick="event.stopPropagation();navigate(\'article\',\'' + a.id + '\')" title="Read full investigation">Read Full Report →</a>' +
+    '</div>' +
+    '<div class="df-visual">🌍</div>' +
+  '</div>';
+}
+
+function buildOpinionStrip() {
+  var opinions = [
+    {label:'Opinion',av:'R',bg:'#c41e3a',author:'Robert Kagan · Foreign Policy',hl:'"The Iran Talks Are the Most Important Diplomacy Since the Cold War"'},
+    {label:'Analysis',av:'A',bg:'#1a3a5c',author:'Amina Diallo · Economics',hl:'"$71 Billion for Gaza: Why the Real Number Is Even Higher"'},
+    {label:'AI Desk',av:'J',bg:'#3a1a5c',author:'James Park · Technology',hl:'"Mythos and the Model Anthropic Is Afraid to Release"'},
+    {label:'Climate Desk',av:'S',bg:'#1a4a2e',author:'Sofia Reyes · Climate',hl:'"War in the Middle East Is Already a Climate Catastrophe"'}
+  ];
+  return '<div class="opinion-strip">' +
+    opinions.map(function(op, i){
+      return '<div class="op-card">' +
+        '<div class="op-label">' + op.label + '</div>' +
+        '<div class="op-avatar" style="background:' + op.bg + '">' + op.av + '</div>' +
+        '<div class="op-author">' + op.author + '</div>' +
+        '<div class="op-hl">' + op.hl + '</div>' +
+      '</div>';
+    }).join('') +
+  '</div>';
+}
+
+function buildLiveSection() {
+  var now = new Date();
+  function timeAgo(mins) {
+    var t = new Date(now - mins * 60000);
+    return (t.getHours()<10?'0':'')+t.getHours()+':'+(t.getMinutes()<10?'0':'')+t.getMinutes()+' GMT';
+  }
+  var updates = [
+    {time:timeAgo(5),tag:'war',tagL:'Conflict',text:'<strong>Iran ceasefire:</strong> VP Vance has departed Andrews Air Force Base for Islamabad, Pakistan. Three US sources confirm delegation includes Witkoff and Kushner. Iran has not confirmed participation in second round of talks.'},
+    {time:timeAgo(22),tag:'diplo',tagL:'Diplomacy',text:'<strong>Lebanon-Israel:</strong> State Department hosting second round of direct talks in Washington. Israeli Ambassador Leiter and Lebanese Ambassador Moawad both in attendance.'},
+    {time:timeAgo(45),tag:'econ',tagL:'Markets',text:'<strong>Oil prices:</strong> Brent crude surges past $82 on Iran ceasefire uncertainty. Analysts warn of $90+ if talks collapse and Strait of Hormuz blockade intensifies.'},
+    {time:timeAgo(88),tag:'ai',tagL:'Tech',text:'<strong>Claude Opus 4.7:</strong> Now available on Amazon Bedrock with full 1M token context window and dynamic capacity allocation. AWS reports up to 10,000 requests per minute per account.'},
+    {time:timeAgo(130),tag:'war',tagL:'Ukraine',text:'<strong>Russia strikes:</strong> Death toll from overnight Russian drone and missile attacks across Ukraine rises to at least 16. Power outages reported in Kharkiv, Zaporizhzhia, and Odesa oblasts.'}
+  ];
+  return '<div class="live-section"><div class="container">' +
+    '<div class="live-badge"><div class="live-dot"></div>Live Updates</div>' +
+    '<div class="live-title">Global Situation Room — April 21, 2026</div>' +
+    '<div>' + updates.map(function(u){
+      return '<div class="update-item">' +
+        '<div class="u-time">' + u.time + '</div>' +
+        '<div class="u-text"><span class="utag ' + u.tag + '">' + u.tagL + '</span>' + u.text + '</div>' +
+      '</div>';
+    }).join('') + '</div>' +
+  '</div></div>';
+}
+
+function buildBottomGrid() {
+  var mostRead = [
+    {title:'Vance Flies to Pakistan as Iran Ceasefire Teeters on the Brink',meta:'Geopolitics · 18,400 reads',id:'iran-talks'},
+    {title:'Claude Opus 4.7 Arrives — And There\'s a More Powerful Model Anthropic Won\'t Release',meta:'Claude AI · 22,100 reads',id:'claude-opus-47'},
+    {title:'UN and EU: Gaza Needs $71.4 Billion to Rebuild',meta:'Middle East · 14,200 reads',id:'gaza-71bn'},
+    {title:'Russian Drone and Missile Strikes Kill at Least 16 Across Ukraine',meta:'Europe · 11,300 reads',id:'ukraine-russia'},
+    {title:'Japan Pledges $10 Billion to Ease Southeast Asia\'s Energy Crisis',meta:'Asia · 7,600 reads',id:'japan-energy'}
+  ];
+  var related = [
+    {tag:'Geopolitics',hl:'Trump Extends Iran Ceasefire Deadline to Wednesday Evening',meta:'2 hours ago',id:'iran-talks'},
+    {tag:'Middle East',hl:'Italy\'s Meloni Defends Suspension of Israel Defence Pact',meta:'4 hours ago',id:'us-israel-lebanon'},
+    {tag:'Claude AI',hl:'Anthropic Revenue Hits $30B Run Rate as Opus 4.7 Launches',meta:'6 hours ago',id:'claude-opus-47'},
+    {tag:'Economy',hl:'Oil Prices Spike on Iran Uncertainty — Analysts Warn $90 Possible',meta:'8 hours ago',id:'iran-talks'}
+  ];
+  return '<div class="bottom-grid">' +
+    '<div class="most-read">' +
+      '<div class="sec-hd" style="margin-top:0;margin-bottom:16px">' +
+        '<h2 class="sec-title" style="font-size:1.15rem">Most Read Today</h2>' +
+        '<div class="sec-rule"></div>' +
+      '</div>' +
+      mostRead.map(function(item, i){
+        return '<div class="mr-item" onclick="navigate(\'article\',\'' + item.id + '\')" title="Read: ' + item.title + '">' +
+          '<div class="mr-num">0' + (i+1) + '</div>' +
+          '<div>' +
+            '<div class="mr-title">' + item.title + '</div>' +
+            '<div class="mr-meta">' + item.meta + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('') +
+    '</div>' +
+    '<div class="sidebar">' +
+      '<div class="sb-widget">' +
+        '<div class="sb-title">Also Today</div>' +
+        related.map(function(r){
+          return '<a class="sb-link" onclick="navigate(\'article\',\'' + r.id + '\')" title="Read: ' + r.hl + '">' +
+            '<div class="sb-tag">' + r.tag + '</div>' +
+            '<div class="sb-hl">' + r.hl + '</div>' +
+            '<div class="sb-meta">' + r.meta + '</div>' +
+          '</a>';
+        }).join('') +
+      '</div>' +
+      '<div class="sb-widget">' +
+        '<div class="sb-title">✉ Morning Briefing</div>' +
+        '<div class="nl-widget">' +
+          '<p>The world\'s most important stories, delivered at 6 AM. Free, always.</p>' +
+          '<input type="email" placeholder="your@email.com"/>' +
+          '<button>Subscribe Free →</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function buildFooter() {
+  return '<footer>' +
+    '<div class="footer-inner">' +
+      '<div class="footer-brand">' +
+        '<div class="logo-name" onclick="navigate(\'home\')" style="font-size:1.6rem;cursor:pointer">WORLD<span>PULSE</span></div>' +
+        '<p>Independent global journalism covering conflict, economy, technology, and the decisions that shape our world. Published daily.</p>' +
+      '</div>' +
+      '<div class="footer-col"><h4>Sections</h4>' +
+        ['Geopolitics','Middle East','Claude AI','Economy','Science','Europe','Asia'].map(function(c){
+          return '<a onclick="navigate(\'category\',\'' + c + '\')" title="Browse ' + c + '">' + c + '</a>';
+        }).join('') +
+      '</div>' +
+      '<div class="footer-col"><h4>Company</h4>' +
+        ['About Us','Our Journalists','Investigations','Press Freedom','Corrections','Contact Us'].map(function(p){
+          return '<a href="#" onclick="event.preventDefault()">' + p + '</a>';
+        }).join('') +
+      '</div>' +
+      '<div class="footer-col"><h4>Subscribe</h4>' +
+        ['Daily Briefing','Weekly Digest','Crisis Alerts','AI Column','Podcast','RSS Feeds'].map(function(p){
+          return '<a href="#" onclick="event.preventDefault()">' + p + '</a>';
+        }).join('') +
+      '</div>' +
+    '</div>' +
+    '<div class="footer-bottom" style="max-width:1220px;margin:22px auto 0;padding:0 32px">' +
+      '<span>© 2026 WorldPulse Global Media. All rights reserved.</span>' +
+      '<span>Privacy · Terms · Cookie Policy</span>' +
+    '</div>' +
+  '</footer>';
+}
+
+function buildHome() {
+  return '<div>' +
+    buildTicker() +
+    buildMasthead() +
+    buildSearch() +
+    buildMarkets() +
+    '<div class="container">' +
+      buildHeroGrid() +
+      '<div class="sec-hd"><h2 class="sec-title">Today\'s Coverage</h2><div class="sec-rule red"></div>' +
+        '<span style="font-family:\'Space Mono\',monospace;font-size:9px;color:var(--mist)">Tuesday April 21, 2026</span>' +
+      '</div>' +
+      buildCardGrid() +
+      buildDarkFeature() +
+      '<div class="sec-hd"><h2 class="sec-title">Analysis & Opinion</h2><div class="sec-rule"></div></div>' +
+      buildOpinionStrip() +
+    '</div>' +
+    buildLiveSection() +
+    '<div class="container">' +
+      '<div class="sec-hd"><h2 class="sec-title">Most Read · Sidebar</h2><div class="sec-rule"></div></div>' +
+      buildBottomGrid() +
+    '</div>' +
+    buildFooter() +
+  '</div>';
+}
+
+function buildArticlePage(id) {
+  var a = getArticle(id);
+  if (!a) return '<div class="container" style="padding:60px 32px"><h2>Article not found</h2>' +
+    '<a class="back-btn" onclick="navigate(\'home\')">← Back to WorldPulse</a></div>';
+
+  // Find prev/next
+  var idx = ARTICLES.findIndex(function(x){ return x.id === id; });
+  var prev = ARTICLES[idx - 1];
+  var next = ARTICLES[idx + 1];
+
+  return '<div>' +
+    buildTicker() +
+    buildMasthead() +
+    buildSearch() +
+    '<div class="article-page">' +
+      '<div class="art-breadcrumb">' +
+        '<a onclick="navigate(\'home\')" title="WorldPulse Home">WorldPulse</a>' +
+        '<span>›</span>' +
+        '<a onclick="navigate(\'category\',\'' + a.catSlug + '\')" title="Browse ' + a.cat + '">' + a.cat + '</a>' +
+        '<span>›</span>' +
+        '<span style="color:var(--ink)">' + a.headline.substring(0,40) + '…</span>' +
+      '</div>' +
+      '<div class="art-kicker">' + a.tag + '</div>' +
+      '<h1 class="art-hl">' + a.headline + '</h1>' +
+      '<div class="art-deck">' + a.deck + '</div>' +
+      '<div class="art-byline">' +
+        '<div class="art-avatar" style="background:' + a.avatarBg + '">' + a.avatar + '</div>' +
+        '<div>' +
+          '<div class="art-byline-name">' + a.author + '</div>' +
+          '<div class="art-byline-meta">' + a.role + ' · ' + a.time + ' · ' + a.readTime + '</div>' +
+        '</div>' +
+        '<div style="margin-left:auto;display:flex;gap:8px">' +
+          '<button style="background:transparent;border:1px solid var(--rule);color:var(--mist);padding:5px 12px;font-family:\'Space Mono\',monospace;font-size:9px;cursor:pointer;letter-spacing:.5px;text-transform:uppercase">Share</button>' +
+          '<button style="background:transparent;border:1px solid var(--rule);color:var(--mist);padding:5px 12px;font-family:\'Space Mono\',monospace;font-size:9px;cursor:pointer;letter-spacing:.5px;text-transform:uppercase">Save</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="art-hero" style="background:' + a.heroGrad + ';display:flex;align-items:center;justify-content:center">' +
+        '<span style="font-size:90px;opacity:.15">' + a.heroIcon + '</span>' +
+        '<div style="position:absolute;bottom:0;left:0;right:0;padding:16px 20px;background:linear-gradient(transparent,rgba(0,0,0,.6))">' +
+          '<span style="font-family:\'Space Mono\',monospace;font-size:9px;color:rgba(255,255,255,.55)">' + a.heroCaption + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="art-hero-cap">' + a.heroCaption + '</div>' +
+      '<div class="art-body">' + a.body + '</div>' +
+      '<div class="art-tags">' +
+        [a.cat, 'WorldPulse', 'April 2026', 'Analysis'].map(function(t){
+          return '<span class="tag">' + t + '</span>';
+        }).join('') +
+      '</div>' +
+      // Prev/Next navigation
+      '<div class="art-nav">' +
+        (prev ?
+          '<div class="art-nav-item" onclick="navigate(\'article\',\'' + prev.id + '\')" title="Previous: ' + prev.headline + '">' +
+            '<div class="art-nav-dir">← Previous Story</div>' +
+            '<div class="art-nav-title">' + prev.headline + '</div>' +
+          '</div>'
+          : '<div></div>') +
+        (next ?
+          '<div class="art-nav-item next" onclick="navigate(\'article\',\'' + next.id + '\')" title="Next: ' + next.headline + '">' +
+            '<div class="art-nav-dir">Next Story →</div>' +
+            '<div class="art-nav-title">' + next.headline + '</div>' +
+          '</div>'
+          : '<div></div>') +
+      '</div>' +
+      '<a class="back-btn" onclick="navigate(\'home\')" title="Back to WorldPulse homepage">← Back to WorldPulse</a>' +
+    '</div>' +
+    buildFooter() +
+  '</div>';
+}
+
+function buildCategoryPage(cat) {
+  var articles = getByCategory(cat);
+  var colorMap = {red:'linear-gradient(135deg,#180808,#2a1010)',gold:'linear-gradient(135deg,#181200,#2a2000)',teal:'linear-gradient(135deg,#041014,#081c28)',green:'linear-gradient(135deg,#041008,#081e10)'};
+  return '<div>' +
+    buildTicker() +
+    buildMasthead() +
+    buildSearch() +
+    '<div class="cat-page">' +
+      '<div class="cat-header">' +
+        '<div class="cat-name">' + (cat === 'All' ? 'All Stories' : cat) + '</div>' +
+        '<div class="cat-desc">' + articles.length + ' article' + (articles.length !== 1 ? 's' : '') + ' · Tuesday, April 21, 2026</div>' +
+      '</div>' +
+      (articles.length === 0 ?
+        '<div style="text-align:center;padding:60px;color:var(--mist);font-family:\'Space Mono\',monospace;font-size:11px">No articles found in this category today.</div>' :
+        '<div class="cat-grid">' +
+        articles.map(function(a){
+          return '<div class="card" onclick="navigate(\'article\',\'' + a.id + '\')" title="Read: ' + a.headline + '">' +
+            '<div class="card-img" style="background:' + (colorMap[a.color]||colorMap.teal) + '">' +
+              '<span style="font-size:44px;opacity:.4">' + a.heroIcon + '</span>' +
+            '</div>' +
+            '<div class="kicker ' + (a.color==='gold'?'gold':a.color==='green'?'green':a.color==='teal'?'teal':'') + '">' + a.tag + '</div>' +
+            '<div class="hl3">' + a.headline + '</div>' +
+            '<div class="deck3">' + a.deck.substring(0,150) + '…</div>' +
+            '<div class="byline" style="margin-top:10px"><strong>' + a.author + '</strong> · ' + a.time + ' · ' + a.readTime + '</div>' +
+          '</div>';
+        }).join('') +
+        '</div>'
+      ) +
+      '<a class="back-btn" onclick="navigate(\'home\')" title="Back to WorldPulse homepage">← Back to WorldPulse</a>' +
+    '</div>' +
+    buildFooter() +
+  '</div>';
+}
+
+// ═══════════════════════════════════════════════
+// RENDER ENGINE
+// ═══════════════════════════════════════════════
+function render() {
+  var root = document.getElementById('app-root');
+  var html = '';
+  if (state.page === 'home') {
+    html = buildHome();
+  } else if (state.page === 'article') {
+    html = buildArticlePage(state.articleId);
+  } else if (state.page === 'category') {
+    html = buildCategoryPage(state.category);
+  }
+  root.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════
+// ACTIONS
+// ═══════════════════════════════════════════════
+function toggleSearch() {
+  state.searchOpen = !state.searchOpen;
+  var bar = document.getElementById('searchBar');
+  if (bar) {
+    bar.classList.toggle('open', state.searchOpen);
+    if (state.searchOpen) { var inp = document.getElementById('searchInput'); if(inp) inp.focus(); }
+  } else { render(); }
+}
+
+function doSearch() {
+  var inp = document.getElementById('searchInput');
+  if (!inp || !inp.value.trim()) return;
+  var q = inp.value.toLowerCase().trim();
+  // Simple keyword match
+  var results = ARTICLES.filter(function(a){
+    return a.headline.toLowerCase().includes(q) ||
+           a.deck.toLowerCase().includes(q) ||
+           a.cat.toLowerCase().includes(q) ||
+           a.author.toLowerCase().includes(q);
+  });
+  if (results.length === 1) {
+    navigate('article', results[0].id);
+  } else {
+    // Show all matching in a category-style page
+    state.page = 'category';
+    state.category = 'Search: "' + inp.value + '"';
+    state.activeNav = 'All';
+    window.scrollTo(0,0);
+    // Temporarily override getByCategory for search
+    var root = document.getElementById('app-root');
+    var colorMap = {red:'linear-gradient(135deg,#180808,#2a1010)',gold:'linear-gradient(135deg,#181200,#2a2000)',teal:'linear-gradient(135deg,#041014,#081c28)',green:'linear-gradient(135deg,#041008,#081e10)'};
+    root.innerHTML = '<div>' + buildTicker() + buildMasthead() + buildSearch() +
+      '<div class="cat-page"><div class="cat-header">' +
+        '<div class="cat-name">Search Results</div>' +
+        '<div class="cat-desc">' + results.length + ' result' + (results.length!==1?'s':'') + ' for "' + inp.value + '"</div>' +
+      '</div>' +
+      (results.length===0 ? '<div style="text-align:center;padding:60px;color:var(--mist);font-family:\'Space Mono\',monospace;font-size:11px">No results found.</div>' :
+        '<div class="cat-grid">' + results.map(function(a){
+          return '<div class="card" onclick="navigate(\'article\',\'' + a.id + '\')" title="Read: ' + a.headline + '">' +
+            '<div class="card-img" style="background:' + (colorMap[a.color]||colorMap.teal) + '">' +
+              '<span style="font-size:44px;opacity:.4">' + a.heroIcon + '</span></div>' +
+            '<div class="kicker">' + a.cat + '</div>' +
+            '<div class="hl3">' + a.headline + '</div>' +
+            '<div class="deck3">' + a.deck.substring(0,130) + '…</div>' +
+            '<div class="byline" style="margin-top:10px"><strong>' + a.author + '</strong> · ' + a.time + '</div>' +
+          '</div>';
+        }).join('') + '</div>') +
+      '<a class="back-btn" onclick="navigate(\'home\')">← Back to WorldPulse</a></div>' +
+      buildFooter() + '</div>';
+  }
+}
+
+function handleSearch(e) {
+  if (e.key === 'Enter') doSearch();
+  if (e.key === 'Escape') { state.searchOpen = false; render(); }
+}
+
+// ── INIT ──
+render();
+</script>
+</body>
+</html>

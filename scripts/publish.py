@@ -5,13 +5,13 @@ import urllib.error
 import datetime
 
 # ── CONFIG ───────────────────────────────────────────────────────────────────
-API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+API_KEY = os.environ.get("WORLDPULSEBLOG", "")
 if not API_KEY:
-    print("FATAL: ANTHROPIC_API_KEY secret is missing")
+    print("FATAL: WORLDPULSEBLOG secret is missing")
     raise SystemExit(1)
 
 print("API key found: ..." + API_KEY[-6:])
-MODEL = "claude-haiku-4-5-20251001"
+MODEL = "gemini-3.5-flash"
 today = datetime.datetime.now().strftime("%A, %B %d, %Y")
 print("Generating blog for: " + today)
 
@@ -51,21 +51,19 @@ SYSTEM = (
 USER = "Today is " + today + ". Generate the complete WorldPulse blog JSON now."
 
 # ── CALL API ─────────────────────────────────────────────────────────────────
-print("Calling Claude API...")
+print("Calling Gemini API...")
 payload = json.dumps({
-    "model": MODEL,
-    "max_tokens": 7000,
-    "system": SYSTEM,
-    "messages": [{"role": "user", "content": USER}]
+    "system_instruction": {"parts": [{"text": SYSTEM}]},
+    "contents": [{"role": "user", "parts": [{"text": USER}]}],
+    "generationConfig": {"maxOutputTokens": 7000}
 }).encode("utf-8")
 
 req = urllib.request.Request(
-    "https://api.anthropic.com/v1/messages",
+    "https://generativelanguage.googleapis.com/v1beta/models/" + MODEL + ":generateContent",
     data=payload,
     headers={
         "Content-Type": "application/json",
-        "x-api-key": API_KEY,
-        "anthropic-version": "2023-06-01"
+        "x-goog-api-key": API_KEY
     },
     method="POST"
 )
@@ -73,7 +71,7 @@ req = urllib.request.Request(
 try:
     with urllib.request.urlopen(req, timeout=120) as resp:
         result = json.loads(resp.read().decode("utf-8"))
-        raw = result["content"][0]["text"].strip()
+        raw = result["candidates"][0]["content"]["parts"][0]["text"].strip()
         print("API response: " + str(len(raw)) + " chars")
 except urllib.error.HTTPError as e:
     print("API HTTP ERROR " + str(e.code) + ": " + e.read().decode("utf-8"))
@@ -109,6 +107,230 @@ ICONS = {
 
 def ic(key):
     return ICONS.get(key, "📰")
+
+def esc(s):
+    return str(s).replace("'", "&#39;").replace('"', '&quot;')
+
+def safe(s):
+    return str(s) if s else ""
+
+# ── BUILD SECTIONS ────────────────────────────────────────────────────────────
+articles   = data.get("articles", [])
+lead       = articles[0] if len(articles) > 0 else {}
+sides      = articles[1:3]
+cards      = articles[3:]
+ai_art     = data.get("claude_ai_article", {})
+tickers    = data.get("breaking_ticker", [])
+markets    = data.get("markets", [])
+live_ups   = data.get("live_updates", [])
+date_str   = data.get("date", today)
+
+all_arts   = list(articles)
+if ai_art:
+    all_arts.append(ai_art)
+
+all_arts_json = json.dumps(all_arts, ensure_ascii=False)
+
+# Ticker
+ticker_spans = ""
+doubled = tickers + tickers
+for h in doubled:
+    ticker_spans += "<span>" + safe(h) + "</span>"
+
+# Markets
+markets_html = ""
+for m in markets:
+    dir_class = safe(m.get("dir", ""))
+    markets_html += (
+        "<div class='m-item'>"
+        "<div><div class='m-label'>" + safe(m.get("label","")) + "</div>"
+        "<div class='m-val'>" + safe(m.get("value","")) + "</div></div>"
+        "<div class='m-chg " + dir_class + "'>" + safe(m.get("change","")) + "</div>"
+        "</div>"
+    )
+
+# Hero lead
+def make_hero_lead(a):
+    aid = safe(a.get("id",""))
+    return (
+        "<div class='hero-lead'>"
+        "<div class='hero-img' onclick=\"openModal('" + aid + "')\">" + ic(a.get("hero_icon","")) + "</div>"
+        "<div class='kicker'>" + safe(a.get("cat","")) + " &bull; " + safe(a.get("tag","")) + "</div>"
+        "<h1 class='hero-hl' onclick=\"openModal('" + aid + "')\">" + safe(a.get("headline","")) + "</h1>"
+        "<p class='deck'>" + safe(a.get("deck","")) + "</p>"
+        "<div class='byline'><strong>" + safe(a.get("author","")) + "</strong> &bull; "
+        + safe(a.get("role","")) + " &bull; " + safe(a.get("time","")) + " &bull; " + safe(a.get("read_time","")) + "</div>"
+        "<button class='read-btn' onclick=\"openModal('" + aid + "')\">Read full story &rarr;</button>"
+        "</div>"
+    )
+
+def make_side_item(a):
+    aid = safe(a.get("id",""))
+    return (
+        "<div class='hero-side-item'>"
+        "<div class='side-img' onclick=\"openModal('" + aid + "')\">" + ic(a.get("hero_icon","")) + "</div>"
+        "<div class='kicker teal'>" + safe(a.get("cat","")) + " &bull; " + safe(a.get("tag","")) + "</div>"
+        "<div class='hl2' onclick=\"openModal('" + aid + "')\">" + safe(a.get("headline","")) + "</div>"
+        "<div class='deck2'>" + safe(a.get("deck","")) + "</div>"
+        "<div class='byline' style='margin-top:8px'><strong>" + safe(a.get("author","")) + "</strong> &bull; " + safe(a.get("time","")) + "</div>"
+        "<button class='read-btn' onclick=\"openModal('" + aid + "')\">Read &rarr;</button>"
+        "</div>"
+    )
+
+hero_html = ""
+if lead:
+    hero_html += make_hero_lead(lead)
+    side_items = ""
+    for s in sides:
+        side_items += make_side_item(s)
+    hero_html += "<div class='hero-side'>" + side_items + "</div>"
+
+# Cards
+cards_html = ""
+for a in cards:
+    aid = safe(a.get("id",""))
+    cards_html += (
+        "<div class='card' onclick=\"openModal('" + aid + "')\">"
+        "<div class='card-img'>" + ic(a.get("hero_icon","")) + "</div>"
+        "<div class='kicker gold'>" + safe(a.get("cat","")) + " &bull; " + safe(a.get("tag","")) + "</div>"
+        "<div class='hl3'>" + safe(a.get("headline","")) + "</div>"
+        "<div class='deck3'>" + safe(a.get("deck","")) + "</div>"
+        "<div class='byline' style='margin-top:10px'><strong>" + safe(a.get("author","")) + "</strong> &bull; " + safe(a.get("time","")) + "</div>"
+        "</div>"
+    )
+
+# AI dark section
+ai_html = ""
+if ai_art:
+    aid = safe(ai_art.get("id",""))
+    ai_html = (
+        "<div class='dark-feat' onclick=\"openModal('" + aid + "')\">"
+        "<div>"
+        "<div class='df-kicker'>" + safe(ai_art.get("cat","")) + " &bull; " + safe(ai_art.get("tag","")) + "</div>"
+        "<div class='df-hl'>" + safe(ai_art.get("headline","")) + "</div>"
+        "<div class='df-deck'>" + safe(ai_art.get("deck","")) + "</div>"
+        "<div class='df-read'>Read the full column &rarr;</div>"
+        "</div>"
+        "<div class='df-vis'>" + ic(ai_art.get("hero_icon","brain")) + "</div>"
+        "</div>"
+    )
+
+# Live updates
+update_times = ["Breaking", "Just now", "2 min ago", "5 min ago", "8 min ago"]
+live_html = ""
+for i, u in enumerate(live_ups):
+    t = update_times[i] if i < len(update_times) else ""
+    live_html += (
+        "<div class='u-item'>"
+        "<div class='u-time'><span class='utag " + safe(u.get("tag","")) + "'>" + safe(u.get("tag_label","")) + "</span><br>" + t + "</div>"
+        "<div class='u-text'>" + safe(u.get("text","")) + "</div>"
+        "</div>"
+    )
+
+# Most read
+most_read_html = ""
+for i, a in enumerate(all_arts[:5]):
+    aid = safe(a.get("id",""))
+    most_read_html += (
+        "<div class='mr-item' onclick=\"openModal('" + aid + "')\">"
+        "<div class='mr-num'>" + str(i+1) + "</div>"
+        "<div><div class='mr-title'>" + safe(a.get("headline","")) + "</div>"
+        "<div class='mr-meta'>" + safe(a.get("cat","")) + " &bull; " + safe(a.get("read_time","4 min read")) + "</div></div>"
+        "</div>"
+    )
+
+# Sidebar stats
+sidebar_stats = [
+    ("Stories today", str(len(all_arts))),
+    ("Regions covered", "6"),
+    ("Live updates", str(len(live_ups))),
+    ("Last updated", "Now"),
+]
+sidebar_html = ""
+for label, val in sidebar_stats:
+    sidebar_html += (
+        "<div class='sb-stat'>"
+        "<span class='sb-stat-label'>" + label + "</span>"
+        "<span class='sb-stat-val'>" + val + "</span>"
+        "</div>"
+    )
+
+# ── CSS (no f-string needed, plain string) ────────────────────────────────────
+CSS = """
+:root{--ink:#0f0e0d;--paper:#f6f2ea;--cream:#faf7f2;--red:#c41e3a;--gold:#b8860b;--teal:#1a5f7a;--rule:#ddd6c8;--mist:#8a8680;--surf:#fff;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--paper);color:var(--ink);font-family:'Source Serif 4',Georgia,serif;font-size:17px;line-height:1.7;}
+.ticker{background:var(--red);color:#fff;height:34px;display:flex;overflow:hidden;position:sticky;top:0;z-index:200;}
+.ticker-tag{background:#000;color:#fff;padding:0 14px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;display:flex;align-items:center;flex-shrink:0;text-transform:uppercase;}
+.ticker-track{overflow:hidden;flex:1;display:flex;align-items:center;}
+.ticker-inner{display:flex;white-space:nowrap;animation:tick 60s linear infinite;}
+.ticker-inner span{font-size:11px;padding:0 36px;}
+.ticker-inner span::after{content:'◆';margin-left:36px;opacity:.4;}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.masthead{background:var(--ink);padding:0 24px;border-bottom:3px solid var(--red);}
+.mast-top{display:flex;align-items:center;justify-content:space-between;padding:16px 0 12px;border-bottom:1px solid rgba(255,255,255,.08);}
+.mast-date{font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;}
+.mast-logo{text-align:center;flex:1;}
+.logo-name{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(1.8rem,5vw,3.5rem);color:#fff;letter-spacing:-1px;line-height:1;text-transform:uppercase;text-decoration:none;display:block;}
+.logo-name span{color:var(--red);}
+.logo-tag{font-family:'Space Mono',monospace;font-size:8px;color:rgba(255,255,255,.3);letter-spacing:4px;text-transform:uppercase;margin-top:3px;}
+.btn-sub{background:var(--red);color:#fff;border:none;padding:8px 16px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
+.nav{display:flex;overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-item{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);padding:11px 16px;border-bottom:3px solid transparent;white-space:nowrap;text-decoration:none;transition:color .2s;}
+.nav-item:hover,.nav-item.active{color:#fff;border-bottom-color:var(--red);}
+.markets{display:flex;background:var(--cream);border-bottom:2px solid var(--rule);overflow-x:auto;padding:0 24px;}
+.m-item{display:flex;align-items:center;gap:7px;padding:8px 18px 8px 0;border-right:1px solid var(--rule);white-space:nowrap;}
+.m-item:last-child{border-right:none;}
+.m-label{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:1px;color:var(--mist);text-transform:uppercase;}
+.m-val{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--ink);}
+.m-chg{font-family:'Space Mono',monospace;font-size:9px;}
+.up{color:#2a9e60;}.down{color:var(--red);}
+.container{max-width:1200px;margin:0 auto;padding:0 24px;}
+.sec-hd{display:flex;align-items:center;gap:12px;margin:36px 0 20px;}
+.sec-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;text-transform:uppercase;color:var(--ink);}
+.sec-rule{flex:1;height:2px;background:var(--rule);}
+.sec-rule.red{background:var(--red);}
+.hero-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:2px;background:var(--rule);border:2px solid var(--rule);margin-top:28px;}
+.hero-lead{background:var(--surf);padding:24px 28px;position:relative;}
+.hero-lead::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--red);}
+.hero-img{width:100%;height:240px;display:flex;align-items:center;justify-content:center;font-size:70px;margin-bottom:18px;cursor:pointer;background:linear-gradient(160deg,#0f1520,#1a3a58);border-radius:2px;}
+.kicker{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--red);border-top:2px solid var(--red);padding-top:4px;display:inline-block;margin-bottom:9px;}
+.kicker.teal{color:var(--teal);border-top-color:var(--teal);}
+.kicker.gold{color:var(--gold);border-top-color:var(--gold);}
+h1.hero-hl{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(1.4rem,2.4vw,2.1rem);line-height:1.15;color:var(--ink);margin-bottom:12px;cursor:pointer;transition:color .2s;}
+h1.hero-hl:hover{color:var(--red);}
+.deck{font-size:14px;color:#444;line-height:1.7;font-weight:300;margin-bottom:12px;}
+.byline{font-family:'Space Mono',monospace;font-size:8px;color:var(--mist);letter-spacing:.8px;text-transform:uppercase;padding-top:11px;border-top:1px solid var(--rule);}
+.byline strong{color:var(--ink);}
+.read-btn{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--red);cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-top:9px;background:none;border:none;}
+.read-btn:hover{text-decoration:underline;}
+.hero-side{background:var(--surf);display:flex;flex-direction:column;}
+.hero-side-item{padding:20px 24px;flex:1;}
+.hero-side-item+.hero-side-item{border-top:2px solid var(--rule);}
+.side-img{width:100%;height:100px;margin-bottom:11px;display:flex;align-items:center;justify-content:center;font-size:34px;cursor:pointer;background:linear-gradient(160deg,#0f1520,#1a2a38);border-radius:2px;}
+.hl2{font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;line-height:1.3;color:var(--ink);cursor:pointer;margin-bottom:5px;transition:color .2s;}
+.hl2:hover{color:var(--red);}
+.deck2{font-size:12px;color:#555;line-height:1.6;font-weight:300;}
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--rule);border:2px solid var(--rule);}
+.card{background:var(--surf);padding:20px;cursor:pointer;transition:background .15s;}
+.card:hover{background:#fffef9;}
+.card-img{width:100%;height:130px;display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:12px;background:linear-gradient(160deg,#0f1520,#1a2a38);border-radius:2px;}
+.hl3{font-family:'Playfair Display',serif;font-weight:700;font-size:.95rem;line-height:1.3;color:var(--ink);margin-bottom:5px;}
+.hl3:hover{color:var(--red);}
+.deck3{font-size:11px;color:#555;line-height:1.6;font-weight:300;}
+.dark-feat{background:var(--ink);padding:34px 40px;display:grid;grid-template-columns:1.3fr 1fr;gap:36px;align-items:center;cursor:pointer;margin:2px 0;}
+.dark-feat:hover{background:#1a1917;}
+.df-kicker{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(232,160,160,.8);border-top:2px solid var(--red);padding-top:4px;display:inline-block;margin-bottom:10px;}
+.df-hl{font-family:'Playfair Display',serif;font-weight:900;font-size:clamp(1.3rem,2vw,1.8rem);line-height:1.2;color:#fff;margin-bottom:10px;}
+.df-deck{font-size:13px;color:rgba(255,255,255,.6);line-height:1.7;}
+.df-read{font-family:'Space Mono',monospace;font-size:9px;color:rgba(232,160,160,.8);display:inline-block;margin-top:10px;}
+.df-vis{font-size:90px;opacity:.14;text-align:center;}
+.live-sec{background:var(--ink);padding:30px 0;margin:36px 0;}
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:var(--red);color:#fff;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;padding:4px 11px;text-transform:uppercase;margin-bottom:16px;}
+.live-dot{width:6px;height:6px;background:#fff;border-radius:50%;animation:blink 1.4s ease infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3    return ICONS.get(key, "📰")
 
 def esc(s):
     return str(s).replace("'", "&#39;").replace('"', '&quot;')

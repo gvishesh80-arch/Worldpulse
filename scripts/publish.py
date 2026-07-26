@@ -5,7 +5,7 @@ import urllib.error
 import datetime
 
 # ── CONFIG ───────────────────────────────────────────────────────────────────
-API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+API_KEY = os.environ.get("WORLDPULSEBLOG", "")
 if not API_KEY:
     print("FATAL: ANTHROPIC_API_KEY secret is missing")
     raise SystemExit(1)

@@ -19,7 +19,7 @@ jobs:
 
       - name: Run script
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          WORLDPULSEBLOG: ${{ secrets.WORLDPULSEBLOG }}
         run: python scripts/publish.py
 
       - name: Commit

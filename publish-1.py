@@ -10,16 +10,17 @@ if not API_KEY:
     print("FATAL: WORLDPULSEBLOG secret is missing")
     raise SystemExit(1)
 
-print("API key found: ..." + API_KEY[-6:])
 MODEL = "gemini-3.5-flash"
-today = datetime.datetime.now().strftime("%A, %B %d, %Y")
+IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
+today = datetime.datetime.now(IST).strftime("%A, %B %d, %Y")
 print("Generating blog for: " + today)
 
 # ── PROMPT ───────────────────────────────────────────────────────────────────
 SYSTEM = (
     "You are the editor of WorldPulse, a global news blog. Today is " + today + ".\n"
     "Return a single valid JSON object. No markdown. No backticks. Just raw JSON.\n"
-    "Replace ALL placeholder text with REAL news content for today.\n"
+    "Use Google Search to find REAL news from the last 24 hours. Never invent facts, quotes or numbers.\n"
+    "Return EXACTLY 3 items in the articles array, no more, no fewer.\n"
     "Structure:\n"
     '{"date":"' + today + '",'
     '"breaking_ticker":["headline 1","headline 2","headline 3","headline 4","headline 5"],'
@@ -33,11 +34,8 @@ SYSTEM = (
     '"articles":['
     '{"id":"story-one","cat":"Geopolitics","tag":"Breaking","headline":"Real headline biggest world story today","deck":"2-3 sentence summary.","author":"Marcus Osei","role":"Senior Correspondent","time":"Today, 8:00 AM","read_time":"5 min read","hero_icon":"globe","body_html":"<p>Full article 400+ words about biggest geopolitical story today. Real facts figures quotes context analysis.</p><h3>Background</h3><p>Historical context.</p><h3>What Happens Next</h3><p>Outlook.</p>"},'
     '{"id":"story-two","cat":"Economy","tag":"Markets","headline":"Real headline biggest economic story today","deck":"2-3 sentence summary.","author":"Amina Diallo","role":"Economics Correspondent","time":"Today, 7:00 AM","read_time":"4 min read","hero_icon":"chart","body_html":"<p>Full economic article 350+ words. Real market data expert opinions implications.</p><h3>Market Reaction</h3><p>How markets responded.</p>"},'
-    '{"id":"story-three","cat":"Science","tag":"Discovery","headline":"Real headline important science story today","deck":"2-3 sentence summary.","author":"Dr. Priya Menon","role":"Science Correspondent","time":"Today, 9:00 AM","read_time":"4 min read","hero_icon":"microscope","body_html":"<p>Full science article 350+ words. Plain English who did it why it matters.</p>"},'
-    '{"id":"story-four","cat":"Europe","tag":"Conflict","headline":"Real headline Europe conflict story today","deck":"2-3 sentence summary.","author":"Anna Kovalenko","role":"Europe Correspondent","time":"Today, 6:00 AM","read_time":"4 min read","hero_icon":"alert","body_html":"<p>Full conflict article 350+ words with real facts and official statements.</p>"},'
-    '{"id":"story-five","cat":"Asia","tag":"Diplomacy","headline":"Real headline major Asia story today","deck":"2-3 sentence summary.","author":"Kenji Tanaka","role":"Asia Correspondent","time":"Today, 5:00 AM","read_time":"4 min read","hero_icon":"world","body_html":"<p>Full Asia article 350+ words covering key developments and regional implications.</p>"}'
+    '{"id":"story-three","cat":"Science","tag":"Discovery","headline":"Real headline important science story today","deck":"2-3 sentence summary.","author":"Dr. Priya Menon","role":"Science Correspondent","time":"Today, 9:00 AM","read_time":"4 min read","hero_icon":"microscope","body_html":"<p>Full science article 350+ words. Plain English who did it why it matters.</p>"'
     '],'
-    '"claude_ai_article":{"id":"claude-ai-today","cat":"Claude AI","tag":"AI Column","headline":"Compelling headline about Anthropic and Claude AI this week","deck":"2-3 sentences about most important AI development this week.","author":"James Park","role":"AI Correspondent","time":"Today, 6:00 AM","read_time":"7 min read","hero_icon":"brain","body_html":"<p>Full AI column 500+ words. Anthropic releases Claude capabilities benefits for humanity real risks. Honest and balanced.</p><h3>What Anthropic Built</h3><p>Specific details.</p><h3>Benefits For Humanity</h3><p>Concrete examples.</p><h3>The Risks</h3><p>Honest assessment.</p><h3>The Bottom Line</h3><p>Journalistic conclusion.</p>"},'
     '"live_updates":['
     '{"tag":"war","tag_label":"Conflict","text":"<strong>Conflict:</strong> Real live update about military situation today."},'
     '{"tag":"diplo","tag_label":"Diplomacy","text":"<strong>Diplomacy:</strong> Real live update about international talks today."},'
@@ -55,7 +53,8 @@ print("Calling Gemini API...")
 payload = json.dumps({
     "system_instruction": {"parts": [{"text": SYSTEM}]},
     "contents": [{"role": "user", "parts": [{"text": USER}]}],
-    "generationConfig": {"maxOutputTokens": 7000}
+    "tools": [{"google_search": {}}],
+    "generationConfig": {"maxOutputTokens": 8192}
 }).encode("utf-8")
 
 req = urllib.request.Request(
@@ -71,7 +70,7 @@ req = urllib.request.Request(
 try:
     with urllib.request.urlopen(req, timeout=120) as resp:
         result = json.loads(resp.read().decode("utf-8"))
-        raw = result["candidates"][0]["content"]["parts"][0]["text"].strip()
+        raw = "".join(p.get("text", "") for p in result["candidates"][0]["content"]["parts"]).strip()
         print("API response: " + str(len(raw)) + " chars")
 except urllib.error.HTTPError as e:
     print("API HTTP ERROR " + str(e.code) + ": " + e.read().decode("utf-8"))
@@ -83,6 +82,8 @@ except Exception as e:
 # ── PARSE JSON ────────────────────────────────────────────────────────────────
 print("Parsing JSON...")
 clean = raw
+if "{" in clean and "}" in clean:
+    clean = clean[clean.index("{"):clean.rindex("}") + 1]
 if clean.startswith("```"):
     clean = "\n".join(clean.split("\n")[1:])
 if "```" in clean:
@@ -96,7 +97,11 @@ except json.JSONDecodeError as e:
     print("Response start: " + clean[:300])
     raise SystemExit(1)
 
-print("Got " + str(len(data.get("articles", []))) + " articles")
+data["articles"] = data.get("articles", [])[:3]
+print("Got " + str(len(data["articles"])) + " articles")
+if len(data["articles"]) < 3:
+    print("FATAL: fewer than 3 articles returned")
+    raise SystemExit(1)
 
 # ── HELPERS ───────────────────────────────────────────────────────────────────
 ICONS = {
@@ -129,7 +134,7 @@ all_arts   = list(articles)
 if ai_art:
     all_arts.append(ai_art)
 
-all_arts_json = json.dumps(all_arts, ensure_ascii=False)
+all_arts_json = json.dumps(all_arts, ensure_ascii=False).replace("</", "<\\/")
 
 # Ticker
 ticker_spans = ""
@@ -198,6 +203,11 @@ for a in cards:
         "<div class='byline' style='margin-top:10px'><strong>" + safe(a.get("author","")) + "</strong> &bull; " + safe(a.get("time","")) + "</div>"
         "</div>"
     )
+
+more_html = ""
+if cards_html:
+    more_html = ("<div class='container' id='more'><div class='sec-hd'><div class='sec-title'>More Stories</div>"
+                 "<div class='sec-rule'></div></div><div class='card-grid'>" + cards_html + "</div></div>\n")
 
 # AI dark section
 ai_html = ""
@@ -331,7 +341,7 @@ h1.hero-hl:hover{color:var(--red);}
 .live-badge{display:inline-flex;align-items:center;gap:6px;background:var(--red);color:#fff;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;padding:4px 11px;text-transform:uppercase;margin-bottom:16px;}
 .live-dot{width:6px;height:6px;background:#fff;border-radius:50%;animation:blink 1.4s ease infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-live-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;margin-bottom:18px;}
+.live-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;margin-bottom:18px;}
 .u-item{display:grid;grid-template-columns:80px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.07);}
 .u-time{font-family:'Space Mono',monospace;font-size:10px;color:var(--red);}
 .u-text{font-size:12px;color:rgba(255,255,255,.78);line-height:1.6;}
@@ -441,18 +451,12 @@ html = (
     "<a class='logo-name' href='#'>World<span>Pulse</span></a>"
     "<div class='logo-tag'>Global Intelligence Daily</div>"
     "</div>"
-    "<button class='btn-sub'>Subscribe</button>"
+    ""
     "</div>"
     "<nav class='nav'>"
-    "<a class='nav-item active' href='#'>Top Stories</a>"
-    "<a class='nav-item' href='#'>Geopolitics</a>"
-    "<a class='nav-item' href='#'>Economy</a>"
-    "<a class='nav-item' href='#'>Europe</a>"
-    "<a class='nav-item' href='#'>Asia</a>"
-    "<a class='nav-item' href='#'>Science</a>"
-    "<a class='nav-item' href='#'>Technology</a>"
-    "<a class='nav-item' href='#'>Climate</a>"
-    "<a class='nav-item' href='#'>Opinion</a>"
+    "<a class='nav-item active' href='#top'>Top Stories</a>"
+    "<a class='nav-item' href='#live'>Live Updates</a>"
+    "<a class='nav-item' href='#most-read'>Most Read</a>"
     "</nav>"
     "</header>\n"
 
@@ -463,24 +467,20 @@ html = (
     "<main>"
 
     # Hero
-    "<div class='container'>"
+    "<div class='container' id='top'>"
     "<div class='sec-hd'><div class='sec-title'>Top Stories</div><div class='sec-rule red'></div></div>"
     "<div class='hero-grid'>" + hero_html + "</div>"
     "</div>\n"
 
     # Live
-    "<div class='live-sec'>"
+    "<div class='live-sec' id='live'>"
     "<div class='container'>"
     "<div class='live-badge'><span class='live-dot'></span> Live Updates</div>"
     "<div class='live-title'>Breaking: Follow Live</div>"
     + live_html +
     "</div></div>\n"
 
-    # Cards
-    "<div class='container'>"
-    "<div class='sec-hd'><div class='sec-title'>More Stories</div><div class='sec-rule'></div></div>"
-    "<div class='card-grid'>" + cards_html + "</div>"
-    "</div>\n"
+    + more_html +
 
     # AI
     "<div class='container' style='margin-top:2px'>" + ai_html + "</div>\n"
@@ -488,7 +488,7 @@ html = (
     # Bottom grid
     "<div class='container' style='margin-top:36px'>"
     "<div class='bot-grid'>"
-    "<div class='most-read'>"
+    "<div class='most-read' id='most-read'>"
     "<div class='sec-hd' style='margin-top:0;margin-bottom:16px'>"
     "<div class='sec-title' style='font-size:1rem'>Most Read</div>"
     "<div class='sec-rule'></div></div>"
@@ -557,5 +557,6 @@ out_path = os.path.join("docs", "index.html")
 with open(out_path, "w", encoding="utf-8") as f:
     f.write(html)
 
+open(os.path.join("docs", ".nojekyll"), "w").close()
 print("Written: " + out_path)
 print("Done! WorldPulse is ready.")

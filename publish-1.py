@@ -552,11 +552,10 @@ html = (
 )
 
 # ── WRITE OUTPUT ──────────────────────────────────────────────────────────────
-os.makedirs("docs", exist_ok=True)
-out_path = os.path.join("docs", "index.html")
+out_path = "index.html"
 with open(out_path, "w", encoding="utf-8") as f:
     f.write(html)
 
-open(os.path.join("docs", ".nojekyll"), "w").close()
+open(".nojekyll", "w").close()
 print("Written: " + out_path)
 print("Done! WorldPulse is ready.")
